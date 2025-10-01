@@ -1,0 +1,22 @@
+    {
+      id: 'placeholder-1',
+      type: 'text',
+      content: `Пока что нет бликов для суперсилы \"${name}\". Станьте первым, кто поделится опытом! 🌟`,
+      author: {
+        name: 'Bliq',
+        avatar: '⭐',
+        isOnline: true
+      },
+      recipient: {
+        name: 'Сообщество',
+        avatar: emoji
+      },
+      superpower: {
+        name: name,
+        emoji: emoji
+      },
+      timestamp: 'только что',
+      likes: 0,
+      comments: 0,
+      isLiked: false
+    }

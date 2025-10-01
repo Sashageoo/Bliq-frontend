@@ -1,0 +1,1306 @@
+/* ТОЛЬКО ТЕМНАЯ ТЕМА - НИКАКИХ ПЕРЕКЛЮЧЕНИЙ */
+:root {
+  --font-size: 16px;
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --radius: 0.625rem;
+  --chart-1: #8b5cf6;
+  --chart-2: #06b6d4;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #ec4899;
+  
+  /* ТЕМНАЯ ТЕМА - ЭНЕРГИЧНАЯ И ВИБРАНТНАЯ */
+  --background: #1a1b23;
+  --foreground: #ffffff;
+  --card: rgba(45, 45, 65, 0.88);
+  --card-foreground: #ffffff;
+  --popover: rgba(35, 35, 55, 0.94);
+  --popover-foreground: #ffffff;
+  --primary: #c084fc;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(65, 70, 90, 0.82);
+  --secondary-foreground: #f8fafc;
+  --muted: rgba(70, 75, 95, 0.70);
+  --muted-foreground: #cbd5e1;
+  --accent: rgba(90, 95, 115, 0.78);
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --border: rgba(120, 125, 145, 0.55);
+  --input: rgba(55, 60, 80, 0.88);
+  --ring: #c084fc;
+  --sidebar: rgba(25, 26, 35, 0.94);
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #c084fc;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(65, 70, 90, 0.82);
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: rgba(120, 125, 145, 0.65);
+  --sidebar-ring: #c084fc;
+}
+
+@theme inline {
+  --font-family: var(--font-family);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+html, body {
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  color-scheme: dark !important;
+}
+
+#root {
+  overflow-x: hidden !important;
+  position: relative;
+  width: 100vw !important;
+  max-width: 100vw !important;
+}
+
+.min-h-screen {
+  overflow-x: hidden !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.px-4, .px-3 {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.h-8 {
+  height: 32px !important;
+  max-height: 32px !important;
+}
+
+[src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"] {
+  /* Логотип Цех85 - специальные стили для аватарок */
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  padding: 6px !important;
+  background: white !important;
+  border-radius: inherit !important;
+}
+
+/* Для маленьких аватарок (например в бликах) */
+.w-10 [src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"],
+.w-12 [src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"],
+.w-14 [src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"] {
+  padding: 4px !important;
+}
+
+/* Для больших аватарок (например в профиле) */
+.w-16 [src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"],
+.w-20 [src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"],
+.w-24 [src*="figma:asset/f264197d0dfa11757e4a661e9aace4fad7102f83"] {
+  padding: 8px !important;
+}
+
+/* Убрали ограничения для других figma assets - они должны работать как обычные изображения */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family);
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+  
+  .line-clamp-4 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .safe-area-pb {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+
+  .overflow-x-auto, .overflow-x-scroll {
+    overflow-x: auto !important;
+    max-width: 100vw !important;
+  }
+
+  .masonry-container {
+    column-gap: 1.5rem;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .instagram-feed-card {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .instagram-feed-card img {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+  }
+
+  .bliks-grid {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    /* По умолчанию 1 колонка для мобильных */
+    grid-template-columns: repeat(1, 1fr);
+    margin: 0 auto;
+  }
+
+
+
+  /* ЭНЕРГЕТИЧЕСКИЙ ГРАДИЕНТ BLIQ - БОЛЕЕ ЯРКИЙ */
+  .bliq-energy-gradient {
+    background: linear-gradient(135deg, 
+      #6366f1 0%,
+      #ec4899 25%,
+      #a855f7 50%,
+      #f59e0b 75%,
+      #06b6d4 100%
+    );
+  }
+
+  /* GLASS CARD - ЯРКАЯ И ЭНЕРГИЧНАЯ ТЕМА */
+  .glass-card {
+    background: linear-gradient(135deg, 
+      rgba(45, 45, 65, 0.90) 0%,
+      rgba(60, 55, 95, 0.85) 50%,
+      rgba(40, 50, 75, 0.88) 100%
+    ) !important;
+    border: 1px solid rgba(192, 132, 252, 0.35) !important;
+    box-shadow: 
+      0 4px 32px rgba(192, 132, 252, 0.25),
+      0 2px 8px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all 0.3s ease;
+  }
+
+  /* НОВЫЕ ЭНЕРГЕТИЧЕСКИЕ СТИЛИ */
+  .energy-glow {
+    box-shadow: 
+      0 0 20px rgba(192, 132, 252, 0.4),
+      0 0 40px rgba(192, 132, 252, 0.2),
+      0 0 60px rgba(192, 132, 252, 0.1) !important;
+  }
+
+  .neon-border {
+    border: 1px solid rgba(192, 132, 252, 0.6) !important;
+    box-shadow: 
+      0 0 10px rgba(192, 132, 252, 0.3),
+      inset 0 0 10px rgba(192, 132, 252, 0.1) !important;
+  }
+
+  .vibrant-card {
+    background: linear-gradient(135deg, 
+      rgba(60, 60, 80, 0.95) 0%,
+      rgba(75, 70, 105, 0.90) 50%,
+      rgba(55, 65, 90, 0.93) 100%
+    ) !important;
+    border: 1px solid rgba(192, 132, 252, 0.4) !important;
+    box-shadow: 
+      0 8px 32px rgba(192, 132, 252, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* ЭФФЕКТЫ СВЕЧЕНИЯ ДЛЯ КНОПОК */
+  .button-glow {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .button-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(192, 132, 252, 0.15) 0%,
+      rgba(236, 72, 153, 0.12) 25%,
+      rgba(168, 85, 247, 0.15) 50%,
+      rgba(245, 158, 11, 0.12) 75%,
+      rgba(6, 182, 212, 0.15) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .button-glow:hover::before {
+    opacity: 1;
+  }
+
+  .button-glow:hover {
+    box-shadow: 
+      0 0 25px rgba(192, 132, 252, 0.5),
+      0 0 50px rgba(192, 132, 252, 0.3),
+      0 0 75px rgba(192, 132, 252, 0.15),
+      0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* ГРАДИЕНТНЫЕ КНОПКИ С СВЕЧЕНИЕМ */
+  .gradient-button {
+    background: linear-gradient(135deg, 
+      #c084fc 0%,
+      #ec4899 25%,
+      #a855f7 50%,
+      #f59e0b 75%,
+      #06b6d4 100%
+    );
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .gradient-button::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, 
+      #c084fc 0%,
+      #ec4899 25%,
+      #a855f7 50%,
+      #f59e0b 75%,
+      #06b6d4 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity 0.3s ease;
+  }
+
+  .gradient-button:hover::before {
+    opacity: 0.8;
+  }
+
+  .gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 0 30px rgba(192, 132, 252, 0.6),
+      0 0 60px rgba(236, 72, 153, 0.4),
+      0 0 90px rgba(168, 85, 247, 0.2),
+      0 8px 25px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* ПУЛЬСИРУЮЩИЕ КНОПКИ */
+  .pulse-button {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 
+        0 0 15px rgba(192, 132, 252, 0.4),
+        0 0 30px rgba(192, 132, 252, 0.2),
+        0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+      box-shadow: 
+        0 0 25px rgba(192, 132, 252, 0.6),
+        0 0 50px rgba(192, 132, 252, 0.4),
+        0 0 75px rgba(192, 132, 252, 0.2),
+        0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  /* НЕОНОВЫЕ КНОПКИ */
+  .neon-button {
+    background: rgba(30, 30, 45, 0.9);
+    border: 2px solid rgba(192, 132, 252, 0.6);
+    color: #c084fc;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .neon-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(192, 132, 252, 0.1) 0%,
+      rgba(236, 72, 153, 0.1) 50%,
+      rgba(168, 85, 247, 0.1) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .neon-button:hover::before {
+    opacity: 1;
+  }
+
+  .neon-button:hover {
+    border-color: rgba(192, 132, 252, 0.8);
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(192, 132, 252, 0.8);
+    box-shadow: 
+      0 0 20px rgba(192, 132, 252, 0.5),
+      0 0 40px rgba(192, 132, 252, 0.3),
+      0 0 60px rgba(192, 132, 252, 0.15),
+      inset 0 0 20px rgba(192, 132, 252, 0.1) !important;
+  }
+
+  /* КНОПКИ С ЭНЕРГЕТИЧЕСКИМ СВЕЧЕНИЕМ */
+  .energy-button {
+    background: linear-gradient(135deg, 
+      rgba(45, 45, 65, 0.95) 0%,
+      rgba(60, 55, 95, 0.90) 50%,
+      rgba(40, 50, 75, 0.95) 100%
+    );
+    border: 1px solid rgba(192, 132, 252, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .energy-button::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: linear-gradient(135deg, 
+      rgba(192, 132, 252, 0.4) 0%,
+      rgba(236, 72, 153, 0.3) 25%,
+      rgba(168, 85, 247, 0.4) 50%,
+      rgba(245, 158, 11, 0.3) 75%,
+      rgba(6, 182, 212, 0.4) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    filter: blur(12px);
+    transition: opacity 0.3s ease;
+  }
+
+  .energy-button:hover::after {
+    opacity: 1;
+  }
+
+  .energy-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(192, 132, 252, 0.8);
+    box-shadow: 
+      0 0 25px rgba(192, 132, 252, 0.5),
+      0 0 50px rgba(192, 132, 252, 0.3),
+      0 6px 20px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #c084fc, #06b6d4, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* DROP SHADOW GLOW EFFECT ДЛЯ ИКОНОК */
+  .drop-shadow-glow {
+    filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
+  }
+
+  /* УЛУЧШЕННЫЕ БИЗНЕС-КНОПКИ */
+  .business-primary-button {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #8b5cf6 100%);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 4px 20px rgba(168, 85, 247, 0.4),
+      0 0 30px rgba(236, 72, 153, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .business-primary-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(168, 85, 247, 0.3) 0%,
+      rgba(236, 72, 153, 0.2) 50%,
+      rgba(139, 92, 246, 0.3) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .business-primary-button:hover::before {
+    opacity: 1;
+  }
+
+  .business-primary-button:hover {
+    box-shadow: 
+      0 6px 30px rgba(168, 85, 247, 0.6),
+      0 0 50px rgba(236, 72, 153, 0.4),
+      0 0 80px rgba(139, 92, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* ЭНЕРГИЧНЫЕ GLASS КНОПКИ */
+  .business-glass-button {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .business-glass-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(139, 92, 246, 0.1) 0%,
+      rgba(168, 85, 247, 0.05) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .business-glass-button:hover::before {
+    opacity: 1;
+  }
+
+  .business-glass-button:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.15),
+      0 0 20px rgba(139, 92, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+
+  /* Адаптивные размеры для фида бликов */
+  @media (max-width: 640px) {
+    .bliks-grid {
+      grid-template-columns: repeat(1, 1fr);
+      max-width: 100%;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 767px) {
+    .bliks-grid {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 500px;
+      gap: 1.25rem;
+    }
+  }
+
+  /* Мобильный профиль: блики в одну колонку как Instagram */
+  .profile-bliks-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .profile-bliks-mobile .instagram-feed-card {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .bliks-grid {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 600px;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .bliks-grid {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 800px;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) and (max-width: 1535px) {
+    .bliks-grid {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 900px;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .bliks-grid {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1200px;
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 1920px) {
+    .bliks-grid {
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 1400px;
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 2560px) {
+    .bliks-grid {
+      grid-template-columns: repeat(6, 1fr);
+      max-width: 1800px;
+      gap: 2.5rem;
+    }
+  }
+
+  .centered-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .centered-content {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .centered-content {
+      max-width: 1024px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .centered-content {
+      max-width: 1280px;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .centered-content {
+      max-width: 1400px;
+    }
+  }
+
+  @media (min-width: 1920px) {
+    .centered-content {
+      max-width: 1600px;
+    }
+  }
+
+  @media (min-width: 2560px) {
+    .centered-content {
+      max-width: 2000px;
+    }
+  }
+}
+
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* КРИТИЧЕСКИ ВАЖНО: Эти правила должны быть в самом конце файла для высшего приоритета! */
+/* Специальные настройки для экрана суперсилы - МАКСИМУМ 3 КОЛОНКИ для читаемости */
+@media (min-width: 1024px) {
+  .superpower-hub-wide-column .bliks-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 100% !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .superpower-hub-wide-column .bliks-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 100% !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .superpower-hub-wide-column .bliks-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 100% !important;
+    gap: 1.75rem !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .superpower-hub-wide-column .bliks-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 100% !important;
+    gap: 2rem !important;
+  }
+}
+
+@media (min-width: 2560px) {
+  .superpower-hub-wide-column .bliks-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 100% !important;
+    gap: 2.25rem !important;
+  }
+}
+
+/* Убрали правила для .participants-group - теперь заголовок всегда видим сверху */
+
+/* АДАПТИВНЫЕ СТИЛИ ДЛЯ БИЗНЕС-ПРОФИЛЕЙ */
+.business-profile-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Адаптивная типографика для бизнес-профилей */
+.business-profile-container h1 {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.375;
+}
+
+@media (min-width: 640px) {
+  .business-profile-container h1 {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.4;
+  }
+}
+
+@media (min-width: 768px) {
+  .business-profile-container h1 {
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 1024px) {
+  .business-profile-container h1 {
+    font-size: 1.75rem; /* 28px */
+    line-height: 1.6;
+  }
+}
+
+/* Адаптивные кнопки для бизнес-профилей */
+.business-action-buttons {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .business-action-buttons {
+    gap: 0.75rem;
+    max-width: 28rem; /* 448px */
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .business-action-buttons {
+    gap: 1rem;
+    max-width: 24rem; /* 384px */
+  }
+}
+
+/* Адаптивные вкладки для бизнес-профилей */
+.business-tabs-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .business-tabs-container {
+    max-width: 32rem; /* 512px */
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .business-tabs-container {
+    max-width: 36rem; /* 576px */
+  }
+}
+
+/* Адаптивная сетка продуктов для бизнес-профилей */
+.business-products-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .business-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .business-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .business-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 64rem; /* 1024px - увеличиваем контейнер для 3 колонок */
+    margin: 0 auto;
+  }
+}
+
+/* Адаптивные карточки событий для бизнес-профилей */
+.business-event-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .business-event-card {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.business-event-image {
+  width: 100%;
+  height: 8rem; /* 128px */
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+@media (min-width: 640px) {
+  .business-event-image {
+    width: 6rem; /* 96px */
+    height: 6rem; /* 96px */
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .business-event-image {
+    width: 7rem; /* 112px */
+    height: 7rem; /* 112px */
+  }
+}
+
+/* Адаптивные статистики для бизнес-профилей */
+.business-stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .business-stats-container {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .business-stats-container {
+    gap: 1.5rem;
+    max-width: 32rem; /* 512px */
+    margin: 0 auto;
+  }
+}
+
+.business-stat-value {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .business-stat-value {
+    font-size: 1.5rem; /* 24px */
+  }
+}
+
+@media (min-width: 768px) {
+  .business-stat-value {
+    font-size: 1.875rem; /* 30px */
+  }
+}
+
+/* 🔧 ИСПРАВЛЕНИЯ ДЛЯ БИЗНЕС-ПРОФИЛЯ - УБИРАЕМ ПОЛОСКУ СПРАВА */
+.business-profile-container,
+.business-profile-container * {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+
+.business-profile-container {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+}
+
+/* 🎯 ПОЛНОШИРИННЫЙ HEADER ДЛЯ БИЗНЕС-ПРОФИЛЯ */
+.business-hero-section {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important;
+  margin-right: calc(-50vw + 50%) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.business-hero-image {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Исправляем навбар */
+.business-nav-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.business-nav-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Исправляем кнопки действий */
+.business-action-buttons-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.business-action-buttons {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Глобальное исправление overflow для всех экранов */
+.min-h-screen {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* Дополнительное исправление для motion компонентов */
+.motion-component {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* ✨ УЛУЧШЕННЫЕ КНОПКИ BLIQ СТИЛЯ */
+.bliq-primary-button {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 35%, #8b5cf6 70%, #c084fc 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 
+    0 4px 20px rgba(168, 85, 247, 0.4),
+    0 0 30px rgba(236, 72, 153, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.bliq-primary-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 6px 30px rgba(168, 85, 247, 0.5),
+    0 0 50px rgba(236, 72, 153, 0.3),
+    0 0 80px rgba(139, 92, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.bliq-glass-button {
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.bliq-glass-button:hover {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ✨ СТИЛЬНЫЙ НАВБАР BLIQ */
+.bliq-nav-button {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.bliq-nav-button.active {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.4) 0%,
+    rgba(139, 92, 246, 0.35) 50%,
+    rgba(236, 72, 153, 0.4) 100%
+  ) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 15px rgba(139, 92, 246, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.bliq-nav-button:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.bliq-nav-badge {
+  background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4) !important;
+}
+
+/* 🎯 СТИЛЬНЫЕ УЛУЧШЕНИЯ ДЛЯ БИЗНЕС-ПРОФИЛЕЙ В СТИЛЕ СУПЕРСИЛ */
+
+/* Базовые исправления макета */
+html, body, #root {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+.min-h-screen {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* 🌟 ЭЛЕГАНТНЫЕ ЭНЕРГЕТИЧЕСКИЕ КАРТОЧКИ СТАТИСТИКИ */
+.business-stats-card {
+  background: linear-gradient(135deg, 
+    rgba(60, 60, 80, 0.95) 0%,
+    rgba(75, 70, 105, 0.90) 50%,
+    rgba(55, 65, 90, 0.95) 100%
+  ) !important;
+  border: 1px solid rgba(192, 132, 252, 0.3) !important;
+  box-shadow: 
+    0 8px 32px rgba(192, 132, 252, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.business-stats-card:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 
+    0 12px 40px rgba(192, 132, 252, 0.25),
+    0 8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(192, 132, 252, 0.5) !important;
+}
+
+/* 🚀 МОЩНЫЕ КНОПКИ ДЕЙСТВИЙ */
+.business-primary-action {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 25%, #8b5cf6 50%, #c084fc 75%, #f0abfc 100%) !important;
+  box-shadow: 
+    0 8px 32px rgba(168, 85, 247, 0.4),
+    0 4px 16px rgba(236, 72, 153, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15) !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.business-primary-action:hover {
+  transform: translateY(-6px) scale(1.03) !important;
+  box-shadow: 
+    0 16px 48px rgba(168, 85, 247, 0.6),
+    0 8px 24px rgba(236, 72, 153, 0.4),
+    0 0 60px rgba(192, 132, 252, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.business-secondary-action {
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.business-secondary-action:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(192, 132, 252, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 💎 ИЗЫСКАННАЯ НАВИГАЦИЯ */
+.business-nav-tab {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.business-nav-tab.active {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.3) 0%,
+    rgba(236, 72, 153, 0.2) 50%,
+    rgba(139, 92, 246, 0.3) 100%
+  ) !important;
+  border: 1px solid rgba(192, 132, 252, 0.5) !important;
+  box-shadow: 
+    0 4px 16px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.business-nav-tab:not(.active):hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ✨ СПЕЦИАЛЬНЫЕ ЭФФЕКТЫ ДЛЯ БИЗНЕС-ПРОФИЛЕЙ */
+.business-hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 27, 35, 0.85) 0%,
+    rgba(139, 92, 246, 0.15) 25%,
+    rgba(236, 72, 153, 0.10) 50%,
+    rgba(168, 85, 247, 0.15) 75%,
+    rgba(26, 27, 35, 0.90) 100%
+  ) !important;
+}
+
+.business-energy-glow {
+  filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.6)) 
+          drop-shadow(0 0 24px rgba(236, 72, 153, 0.4)) !important;
+}
+
+.business-glass-effect {
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.08) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 🎨 АНИМАЦИИ ДЛЯ ПЛАВНОСТИ */
+@keyframes business-pulse-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(192, 132, 252, 0.4),
+      0 0 40px rgba(192, 132, 252, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(192, 132, 252, 0.6),
+      0 0 60px rgba(192, 132, 252, 0.4),
+      0 0 80px rgba(236, 72, 153, 0.2);
+  }
+}
+
+.business-pulse-animation {
+  animation: business-pulse-glow 3s ease-in-out infinite;
+}
+
+/* 📱 АДАПТИВНЫЕ УЛУЧШЕНИЯ */
+@media (max-width: 640px) {
+  .business-stats-card {
+    padding: 1rem !important;
+  }
+  
+  .business-primary-action {
+    padding: 1rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+  
+  .business-secondary-action {
+    padding: 0.875rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .business-stats-card:hover {
+    transform: translateY(-6px) scale(1.03) !important;
+  }
+  
+  .business-primary-action:hover {
+    transform: translateY(-8px) scale(1.04) !important;
+  }
+}
