@@ -358,11 +358,11 @@ export function SearchModal({
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setActiveCategory(category.id)}
                     className={`
-                      flex items-center gap-2 px-4 py-2 rounded-lg
+                      flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-md
                       text-sm font-medium whitespace-nowrap
                       transition-all duration-300
                       ${isActive 
-                        ? 'bg-purple-500/30 text-white border border-purple-400/50' 
+                        ? 'bg-[#54347F] text-white' 
                         : 'bg-white/10 text-white/80 hover:bg-white/20'
                       }
                     `}
@@ -372,7 +372,7 @@ export function SearchModal({
                     {category.count > 0 && (
                       <span className={`
                         px-1.5 py-0.5 rounded-full text-xs
-                        ${isActive ? 'bg-purple-400/50' : 'bg-white/20'}
+                        ${isActive ? 'bg-purple-600/60' : 'bg-white/20'}
                       `}>
                         {category.count}
                       </span>
@@ -508,12 +508,15 @@ export function SearchModal({
                           "
                         >
                           <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <img
-                                src={result.avatar}
-                                alt={result.title}
-                                className="w-12 h-12 rounded-full object-cover"
-                              />
+                            <div className="relative flex-shrink-0">
+                              <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+                                <img
+                                  src={result.avatar}
+                                  alt={result.title}
+                                  className="w-full h-full object-cover"
+                                  style={{ minWidth: '48px', minHeight: '48px' }}
+                                />
+                              </div>
                               {result.isOnline && (
                                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900" />
                               )}
@@ -554,7 +557,7 @@ export function SearchModal({
                           whileTap={{ scale: 0.98 }}
                           onClick={() => handleResultClick({
                             id: user.id,
-                            type: 'user',
+                            type: user.profileType === 'business' ? 'business' : 'user',
                             title: user.name || '',
                             subtitle: user.status || '',
                             avatar: user.avatar,
@@ -569,12 +572,15 @@ export function SearchModal({
                           "
                         >
                           <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <img
-                                src={user.avatar}
-                                alt={user.name}
-                                className="w-12 h-12 rounded-full object-cover"
-                              />
+                            <div className="relative flex-shrink-0">
+                              <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+                                <img
+                                  src={user.avatar}
+                                  alt={user.name}
+                                  className="w-full h-full object-cover"
+                                  style={{ minWidth: '48px', minHeight: '48px' }}
+                                />
+                              </div>
                               {user.isOnline && (
                                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900" />
                               )}
@@ -592,10 +598,17 @@ export function SearchModal({
                             </div>
                           </div>
                           <div className="absolute bottom-3 right-3">
-                            <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 border border-blue-400/40 rounded-md backdrop-blur-sm">
-                              <User size={10} className="text-blue-400" />
-                              <span className="text-blue-200 text-xs font-medium">Пользователь</span>
-                            </div>
+                            {user.profileType === 'business' ? (
+                              <div className="flex items-center gap-1 px-2 py-1 bg-orange-500/20 border border-orange-400/40 rounded-md backdrop-blur-sm">
+                                <Building2 size={10} className="text-orange-400" />
+                                <span className="text-orange-200 text-xs font-medium">Бизнес</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 border border-blue-400/40 rounded-md backdrop-blur-sm">
+                                <User size={10} className="text-blue-400" />
+                                <span className="text-blue-200 text-xs font-medium">Пользователь</span>
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       ));
@@ -682,11 +695,16 @@ export function SearchModal({
                           "
                         >
                           <div className="flex items-center gap-3">
-                            <img
-                              src={blik.author?.avatar}
-                              alt={blik.author?.name}
-                              className="w-12 h-12 rounded-full object-cover"
-                            />
+                            <div className="flex-shrink-0">
+                              <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+                                <img
+                                  src={blik.author?.avatar}
+                                  alt={blik.author?.name}
+                                  className="w-full h-full object-cover"
+                                  style={{ minWidth: '48px', minHeight: '48px' }}
+                                />
+                              </div>
+                            </div>
                             <div className="flex-1 min-w-0 pr-20">
                               <h3 className="font-medium text-white truncate mb-1">
                                 {blik.content && blik.content.length > 60 ? blik.content.substring(0, 60) + '...' : blik.content}
@@ -743,13 +761,16 @@ export function SearchModal({
                   >
                     <div className="flex items-center gap-3">
                       {/* Аватар/Эмодзи */}
-                      <div className="relative">
+                      <div className="relative flex-shrink-0">
                         {result.avatar ? (
-                          <img
-                            src={result.avatar}
-                            alt={result.title}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
+                          <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+                            <img
+                              src={result.avatar}
+                              alt={result.title}
+                              className="w-full h-full object-cover"
+                              style={{ minWidth: '48px', minHeight: '48px' }}
+                            />
+                          </div>
                         ) : (
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-2xl">
                             {result.emoji}

@@ -176,34 +176,33 @@ export function SuperpowerCard({
   }
 
   // Вертикальный layout (по умолчанию)
+  // 🎯 РЕЖИМ ПРЕВЬЮ - КОМПАКТНЫЙ СТИЛЬ КАК В ПРОФИЛЕ
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      whileHover={{ scale: 1.05, y: -4 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+      whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`
+      className="
         backdrop-blur-xl glass-card
-        rounded-2xl ${cardSettings.padding}
+        rounded-xl p-4
         hover:bg-accent
         transition-all duration-300
         cursor-pointer
-        ${cardSettings.aspectRatio}
-        ${cardSettings.maxHeight}
         flex flex-col
+        flex-shrink-0
         group
         relative overflow-hidden
         shadow-lg hover:shadow-xl
-        w-full
-      `}
+      "
     >
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col h-full justify-between">
         {/* Владелец суперсилы (если не своя) */}
         {!isOwn && ownerName && ownerAvatar && (
-          <div className="absolute -top-2 -right-2 z-20">
-            <div className="w-7 h-7 rounded-full border-2 border-white/20 overflow-hidden bg-slate-800/80 backdrop-blur-sm">
+          <div className="absolute -top-1 -right-1 z-20">
+            <div className="w-6 h-6 rounded-full border-2 border-white/20 overflow-hidden bg-slate-800/80 backdrop-blur-sm">
               <img 
                 src={ownerAvatar} 
                 alt={ownerName}
@@ -213,16 +212,9 @@ export function SuperpowerCard({
           </div>
         )}
 
-        {/* Эмодзи - больше и с энергетическим фоном */}
-        <div className="text-center mb-3">
-          <div className={`${cardSettings.emojiSize} filter drop-shadow-lg inline-flex items-center justify-center rounded-xl bg-gradient-to-br from-purple-600/30 to-pink-600/30 border border-purple-500/40`}>
-            {emoji}
-          </div>
-        </div>
-        
         {/* Название суперсилы */}
-        <div className="flex-1 flex flex-col justify-center mb-3">
-          <h3 className={`font-semibold ${cardSettings.titleSize} text-center leading-tight text-white`}>
+        <div className="mb-3">
+          <div className="font-medium text-sm leading-tight text-white">
             <div 
               className="line-clamp-2"
               style={{
@@ -230,45 +222,47 @@ export function SuperpowerCard({
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
-                lineHeight: screenWidth >= 1280 ? '1.2rem' : screenWidth >= 480 ? '1.1rem' : '1rem',
-                height: screenWidth >= 1280 ? '2.4rem' : screenWidth >= 480 ? '2.2rem' : '2rem',
+                lineHeight: '1.1rem',
+                height: '2.2rem',
                 wordBreak: 'break-word',
                 hyphens: 'auto'
               }}
             >
               {name.replace(' - Ваша', '').replace('Ваша ', '')}
             </div>
-          </h3>
+          </div>
           {/* Имя владельца под названием (если не своя) */}
           {!isOwn && ownerName && (
-            <div className="text-xs text-white/60 text-center mt-1 truncate">
+            <div className="text-xs text-white/60 mt-1 truncate">
               {ownerName}
             </div>
           )}
         </div>
         
-        {/* Блики */}
-        <div className="flex items-center justify-center gap-1 mb-3">
-          <span className={`font-bold ${cardSettings.bliksSize} text-white`}>{bliks}</span>
-          <Camera size={screenWidth >= 1280 ? 16 : 14} className="text-blue-500" />
+        {/* Значение с иконкой камеры */}
+        <div className="flex items-center gap-1 mb-3">
+          <span className="font-bold text-xl text-white">{bliks}</span>
+          <Camera size={14} className="text-blue-400" />
         </div>
         
         {/* Прогресс-бар с процентом */}
-        <div className="flex items-center gap-2">
-          <div className={`relative flex-1 ${screenWidth >= 1280 ? 'h-2.5' : 'h-2'} rounded-full overflow-hidden bg-slate-700/50`}>
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${energy}%` }}
-              transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-              className={`h-full ${getProgressColor(energy)} rounded-full relative`}
-            >
-              {/* Энергетическое свечение */}
-              <div className={`absolute inset-0 ${getProgressColor(energy)} blur-sm opacity-50`} />
-            </motion.div>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 relative h-2 rounded-full overflow-hidden bg-slate-700/50 mr-2">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${energy}%` }}
+                transition={{ duration: 1, delay: 0.5 + index * 0.05 }}
+                className={`h-full ${getProgressColor(energy)} rounded-full relative`}
+              >
+                {/* Энергетическое свечение */}
+                <div className={`absolute inset-0 ${getProgressColor(energy)} blur-sm opacity-40`} />
+              </motion.div>
+            </div>
+            <span className={`font-bold text-xs ${getProgressColor(energy).replace('bg-', 'text-')} min-w-[2rem]`}>
+              {energy}%
+            </span>
           </div>
-          <span className={`font-bold ${screenWidth >= 1280 ? 'text-sm' : 'text-xs'} ${getProgressColor(energy).replace('bg-', 'text-')} min-w-[32px] text-right`}>
-            {energy}%
-          </span>
         </div>
       </div>
     </motion.div>

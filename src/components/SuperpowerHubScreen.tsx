@@ -35,6 +35,7 @@ interface SuperpowerHubProps {
   onBlikDetail: (blikId: string) => void;
   onSidebar?: () => void;
   onSearch?: () => void;
+  onNotifications?: () => void;
   onSuperpowerClick?: (superpowerName: string) => void;
   isOwner?: boolean;
   // Новые props для мегасил
@@ -65,6 +66,7 @@ export function SuperpowerHubScreen({
   onBlikDetail,
   onSidebar,
   onSearch,
+  onNotifications,
   onSuperpowerClick,
   isOwner = false,
   isMegaSuperpower = false,
@@ -651,17 +653,17 @@ export function SuperpowerHubScreen({
                               />
                             )}
                             <div className="flex flex-col items-start flex-1 min-w-0">
-                              <h1 className="text-lg font-bold text-white mb-0.5">
+                              <h1 className="font-bold text-white mb-0.5">
                                 {name}
                               </h1>
                               <span 
-                                className="text-white/80 text-sm cursor-pointer hover:text-purple-300 transition-colors duration-200"
+                                className="text-white/80 cursor-pointer hover:text-purple-300 transition-colors duration-200"
                                 onClick={() => ownerUserId && onUserProfile(ownerUserId)}
                                 title={`Перейти в профиль ${displayOwnerName}`}
                               >
                                 {displayOwnerName}
                               </span>
-                              <span className="text-white/50 text-xs bg-white/10 px-2 py-0.5 rounded-full mt-1">{category}</span>
+                              <span className="text-white/50 bg-white/10 px-2 py-0.5 rounded-full mt-1">{category}</span>
                             </div>
                           </div>
                         </div>
@@ -673,30 +675,30 @@ export function SuperpowerHubScreen({
                             {/* Блики */}
                             <div className="text-center">
                               <Camera className="w-5 h-5 mx-auto mb-1 text-orange-400" />
-                              <div className="text-white font-medium text-base">{bliks}</div>
-                              <div className="text-white/50 text-xs">Блики</div>
+                              <div className="text-white font-medium">{bliks}</div>
+                              <div className="text-white/50">Блики</div>
                             </div>
                             
                             {/* Энергия */}
                             <div className="text-center">
                               <BatteryCharging className="w-5 h-5 mx-auto mb-1 text-emerald-400" />
-                              <div className="text-white font-medium text-base">{energy}%</div>
-                              <div className="text-white/50 text-xs">Энергия</div>
+                              <div className="text-white font-medium">{energy}%</div>
+                              <div className="text-white/50">Энергия</div>
                             </div>
                             
                             {/* Участники */}
                             <div className="text-center">
                               <Users className="w-5 h-5 mx-auto mb-1 text-blue-400" />
-                              <div className="text-white font-medium text-base">{communityStats.members.toLocaleString()}</div>
-                              <div className="text-white/50 text-xs">Участники</div>
+                              <div className="text-white font-medium">{communityStats.members.toLocaleString()}</div>
+                              <div className="text-white/50">Участники</div>
                             </div>
                           </div>
 
                           {/* Уровень энергии с прогресс-баром */}
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-white/60 text-xs">Уровень энергии</span>
-                              <span className="text-white/90 text-xs font-medium">{energy}%</span>
+                              <span className="text-white/60">Уровень энергии</span>
+                              <span className="text-white/90 font-medium">{energy}%</span>
                             </div>
                             <div className="relative w-full h-2 bg-white/20 rounded-full overflow-hidden">
                               <motion.div
@@ -712,28 +714,31 @@ export function SuperpowerHubScreen({
                         {/* Блок Активные участники (отдельно, мобильный) */}
                         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-3 mb-3">
                           {/* Заголовок блока */}
-                          <div className="text-white/70 text-xs font-medium mb-2">
+                          <div className="text-white/70 font-medium mb-2">
                             Активные участники
                           </div>
                           
                           {/* Только аватарки без статистики */}
                           <div className="flex -space-x-2">
                             {superpowerBlikers.slice(0, 6).map((member, index) => (
-                              <motion.img
+                              <motion.div
                                 key={member.id}
-                                src={member.avatar}
-                                alt={member.name}
-                                onClick={() => onUserProfile(member.id)}
-                                className="w-8 h-8 rounded-lg border-2 border-white/40 cursor-pointer bg-white/10"
                                 style={{ zIndex: 10 - index }}
                                 whileHover={{ scale: 1.15, zIndex: 20 }}
                                 whileTap={{ scale: 0.95 }}
-                                title={member.name}
-                              />
+                              >
+                                <img
+                                  src={member.avatar}
+                                  alt={member.name}
+                                  onClick={() => onUserProfile(member.id)}
+                                  className="w-8 h-8 rounded-lg border-2 border-white/40 cursor-pointer bg-white/10"
+                                  title={member.name}
+                                />
+                              </motion.div>
                             ))}
                             {superpowerBlikers.length > 6 && (
                               <div className="w-8 h-8 rounded-lg bg-white/20 border-2 border-white/40 flex items-center justify-center">
-                                <span className="text-white text-xs font-medium">+{superpowerBlikers.length - 6}</span>
+                                <span className="text-white font-medium">+{superpowerBlikers.length - 6}</span>
                               </div>
                             )}
                           </div>
@@ -878,7 +883,7 @@ export function SuperpowerHubScreen({
                           }
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="w-full bg-transparent text-white placeholder-white/50 px-3 py-2 text-sm focus:outline-none"
+                          className="w-full bg-transparent text-white placeholder-white/50 px-3 py-2 focus:outline-none"
                           autoFocus
                         />
                       </div>
@@ -902,11 +907,11 @@ export function SuperpowerHubScreen({
                             {emoji}
                           </div>
                           <div className="flex-1">
-                            <h1 className="text-2xl font-bold text-white mb-2">
+                            <h1 className="font-bold text-white mb-2">
                               {name.replace(' - Ваша', '').replace('Ваша ', '')}
                             </h1>
-                            <p className="text-purple-200 text-sm mb-3">{category}</p>
-                            <p className="text-white/70 text-base leading-relaxed">
+                            <p className="text-purple-200 mb-3">{category}</p>
+                            <p className="text-white/70">
                               {description}
                             </p>
                           </div>
@@ -915,12 +920,12 @@ export function SuperpowerHubScreen({
                         {/* Статистика */}
                         <div className="grid grid-cols-2 gap-4 mb-6">
                           <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
-                            <div className="text-2xl font-bold text-white mb-1">{bliks}</div>
-                            <div className="text-white/60 text-sm">Блики</div>
+                            <div className="font-bold text-white mb-1">{bliks}</div>
+                            <div className="text-white/60">Блики</div>
                           </div>
                           <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
-                            <div className="text-2xl font-bold text-white mb-1">{energy}%</div>
-                            <div className="text-white/60 text-sm">Энергия</div>
+                            <div className="font-bold text-white mb-1">{energy}%</div>
+                            <div className="text-white/60">Энергия</div>
                           </div>
                         </div>
 
@@ -936,10 +941,10 @@ export function SuperpowerHubScreen({
                               <div className="text-white font-medium">
                                 {isOwner ? 'Ваша суперсила' : displayOwnerName}
                               </div>
-                              <div className="text-white/60 text-sm flex items-center gap-2">
+                              <div className="text-white/60 flex items-center gap-2">
                                 {isOwner ? 'Владелец' : 'Автор суперсилы'}
                                 {!isOwner && ownerProfileType === 'business' && (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-xs">
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30">
                                     <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
                                     Бизнес
                                   </span>
@@ -1096,8 +1101,8 @@ export function SuperpowerHubScreen({
                               </motion.div>
                             </div>
                           ) : (
-                            /* Если бликов много, показываем в сетке */
-                            <div className="bliks-grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3">
+                            /* Если бликов много, показываем в сетке с адаптивными колонками */
+                            <div className="bliks-grid">
                               {filteredContent.map((blik, index) => (
                                 <motion.div
                                   key={blik.id}

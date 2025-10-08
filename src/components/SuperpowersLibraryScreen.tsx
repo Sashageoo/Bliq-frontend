@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Search, Filter, Users, BookOpen, Zap, Grid3X3, List, BarChart3, Map } from 'lucide-react';
+import { Search, BookOpen, List, Grid3X3 } from 'lucide-react';
 import { StatusBar } from './StatusBar';
+import { CompactSuperpowerCard } from './CompactSuperpowerCard';
 
 interface MegapowerLibraryItem {
   name: string;
@@ -369,33 +370,37 @@ function MegapowerLibraryCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: index * 0.02 }}
       whileHover={{ scale: 1.02, y: -2 }}
       onClick={() => onDetail(superpower.name)}
       className={`
         relative backdrop-blur-xl bg-gradient-to-br ${getCategoryColor(superpower.category)}
-        border rounded-lg p-1 h-full
+        border rounded-lg p-1
         transition-all duration-300
         group cursor-pointer
         overflow-hidden flex flex-col
       `}
+      style={{ 
+        margin: 0,
+        padding: '4px'
+      }}
     >
       {/* Glow effect на hover */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col justify-between" style={{ height: '100%' }}>
         {/* Заголовок с названием */}
         <div className="flex items-center gap-1 flex-1 min-w-0 mb-1">
           <span className="flex-shrink-0">{superpower.emoji}</span>
           <div className="flex-1 min-w-0">
-            <h3 className="text-foreground font-medium line-clamp-2">
+            <h3 className="text-foreground font-medium line-clamp-2" style={{ lineHeight: '1.2' }}>
               {superpower.name.replace(' - Ваша', '').replace('Ваша ', '')}
             </h3>
             {/* Имя владельца (если это чужая суперсила) */}
             {isUserSuperpower && ownerName && (
-              <div className="text-xs text-muted-foreground truncate mt-0.5">
+              <div className="text-muted-foreground truncate mt-0.5" style={{ lineHeight: '1.2' }}>
                 {ownerName}
               </div>
             )}
@@ -407,13 +412,13 @@ function MegapowerLibraryCard({
           <div className="flex items-center gap-1.5">
             <div className="flex items-center gap-0.5">
               <Users size={8} className="text-blue-400" />
-              <span className="text-foreground">
+              <span className="text-foreground" style={{ lineHeight: '1' }}>
                 {superpower.name === 'Программирование' ? '3.6k' : (superpower.totalUsers > 1000 ? `${Math.round(superpower.totalUsers/1000*10)/10}k` : superpower.totalUsers.toString())}
               </span>
             </div>
             <div className="flex items-center gap-0.5">
               <span className="text-yellow-400">⚡</span>
-              <span className="text-foreground">
+              <span className="text-foreground" style={{ lineHeight: '1' }}>
                 {superpower.name === 'Программирование' ? '156' : superpower.averageBliks}
               </span>
             </div>
@@ -424,7 +429,7 @@ function MegapowerLibraryCard({
   );
 }
 
-type ViewMode = 'плитки' | 'список' | 'таблица' | 'галерея';
+type ViewMode = 'галерея' | 'список';
 
 export function MegapowersLibraryScreen({
   superpowers = [],
@@ -433,7 +438,7 @@ export function MegapowersLibraryScreen({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Все');
   const [selectedOwnership, setSelectedOwnership] = useState<string>('Все');
-  const [viewMode, setViewMode] = useState<ViewMode>('плитки');
+  const [viewMode, setViewMode] = useState<ViewMode>('галерея');
 
   // Преобразуем переданные суперсилы в формат для отображения
   const convertedSuperpowers: MegapowerLibraryItem[] = superpowers.map(sp => ({
@@ -604,19 +609,23 @@ export function MegapowersLibraryScreen({
     });
 
     switch (viewMode) {
-      case 'плитки':
+      case 'галерея':
         return (
-          <div className="grid grid-cols-2 gap-1.5 mb-16 min-h-[800px]">
+          <div className="superpowers-grid mb-16 min-h-[800px]">
             {superpowersData.map(({ superpower, index, uniqueKey, ownerName }) => (
-              <div key={uniqueKey} className="h-[95px] overflow-hidden">
-                <MegapowerLibraryCard
-                  superpower={superpower}
-                  index={index}
-                  onDetail={onSuperpowerDetail}
-                  isUserSuperpower={false}
-                  ownerName={ownerName}
-                />
-              </div>
+              <CompactSuperpowerCard
+                key={uniqueKey}
+                name={superpower.name}
+                emoji={superpower.emoji}
+                value={superpower.averageBliks}
+                index={index}
+                trend={superpower.trend}
+                onClick={() => onSuperpowerDetail(superpower.name)}
+                // 🎯 РЕЖИМ БИБЛИОТЕКИ - показываем статистику
+                mode="library"
+                totalUsers={superpower.totalUsers}
+                totalBliks={superpower.averageBliks * superpower.totalUsers}
+              />
             ))}
           </div>
         );
@@ -639,106 +648,27 @@ export function MegapowersLibraryScreen({
                     <div className="flex items-center gap-3">
                       <span>{superpower.emoji}</span>
                       <div>
-                        <h3 className="text-foreground font-medium">{superpower.name}</h3>
-                        <p className="text-muted-foreground">{superpower.category}</p>
+                        <h3 className="text-foreground font-medium" style={{ lineHeight: '1.2' }}>{superpower.name}</h3>
+                        <p className="text-muted-foreground" style={{ lineHeight: '1.3' }}>{superpower.category}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 text-right">
                       <div>
-                        <div className="text-foreground font-medium">👭 {getFriendsWithSuperpowerCount(superpower.name)}</div>
-                        <div className="text-muted-foreground">у друзей</div>
+                        <div className="text-foreground font-medium" style={{ lineHeight: '1.2' }}>👭 {getFriendsWithSuperpowerCount(superpower.name)}</div>
+                        <div className="text-muted-foreground" style={{ lineHeight: '1.2' }}>у друзей</div>
                       </div>
                       <div>
-                        <div className="flex items-center gap-1 text-foreground font-bold">
+                        <div className="flex items-center gap-1 text-foreground font-bold" style={{ lineHeight: '1.2' }}>
                           <span className="text-yellow-400">⚡</span>
                           {superpower.averageBliks}
                         </div>
-                        <div className="text-muted-foreground">блики</div>
+                        <div className="text-muted-foreground" style={{ lineHeight: '1.2' }}>блики</div>
                       </div>
                     </div>
                   </div>
                 </motion.div>
               );
             })}
-          </div>
-        );
-
-      case 'таблица':
-        return (
-          <div className="glass-card rounded-xl overflow-hidden mb-16 min-h-[800px]">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr>
-                    <th className="text-left p-4 text-foreground font-medium">Суперсила</th>
-                    <th className="text-left p-4 text-foreground font-medium">Категория</th>
-                    <th className="text-center p-4 text-foreground font-medium">У друзей</th>
-                    <th className="text-center p-4 text-foreground font-medium">Блики</th>
-                    <th className="text-center p-4 text-foreground font-medium">Сложность</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {superpowersData.map(({ superpower, uniqueKey }) => (
-                    <motion.tr
-                      key={uniqueKey}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      whileHover={{ backgroundColor: 'rgba(192, 132, 252, 0.05)' }}
-                      onClick={() => onSuperpowerDetail(superpower.name)}
-                      className="border-b border-border/50 cursor-pointer transition-all"
-                    >
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <span>{superpower.emoji}</span>
-                          <span className="text-foreground font-medium">{superpower.name}</span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <span className="text-muted-foreground">{superpower.category}</span>
-                      </td>
-                      <td className="p-4 text-center">
-                        <span className={`px-2 py-1 rounded-full ${getFriendsCountColor(getFriendsWithSuperpowerCount(superpower.name))}`}>
-                          👭 {getFriendsWithSuperpowerCount(superpower.name)}
-                        </span>
-                      </td>
-                      <td className="p-4 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-yellow-400">⚡</span>
-                          <span className="text-foreground font-bold">{superpower.averageBliks}</span>
-                        </div>
-                      </td>
-
-                      <td className="p-4 text-center">
-                        <span className={`px-2 py-1 rounded-full ${
-                          superpower.difficulty === 'Легко' ? 'bg-green-500/20 text-green-400' :
-                          superpower.difficulty === 'Средне' ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-red-500/20 text-red-400'
-                        }`}>
-                          {superpower.difficulty}
-                        </span>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-
-      case 'галерея':
-        return (
-          <div className="grid grid-cols-2 gap-1.5 mb-16 min-h-[800px]">
-            {superpowersData.map(({ superpower, index, uniqueKey, ownerName }) => (
-              <div key={uniqueKey} className="h-[95px] overflow-hidden">
-                <MegapowerLibraryCard
-                  superpower={superpower}
-                  index={index}
-                  onDetail={onSuperpowerDetail}
-                  isUserSuperpower={false}
-                  ownerName={ownerName}
-                />
-              </div>
-            ))}
           </div>
         );
 
@@ -763,6 +693,7 @@ export function MegapowersLibraryScreen({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="text-foreground font-semibold mb-1 flex items-center gap-2"
+              style={{ lineHeight: '1.2' }}
             >
               <BookOpen size={24} />
               Суперсилы
@@ -772,6 +703,7 @@ export function MegapowersLibraryScreen({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
               className="text-muted-foreground"
+              style={{ lineHeight: '1.3' }}
             >
               Коллективные силы сообщества
             </motion.p>
@@ -786,14 +718,14 @@ export function MegapowersLibraryScreen({
           >
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="font-bold text-foreground">
+                <div className="font-bold text-foreground" style={{ lineHeight: '1.2' }}>
                   {Math.round(allSuperpowers.reduce((sum, sp) => sum + sp.totalUsers, 0) / 1000)}k
                 </div>
-                <div className="text-muted-foreground">активных</div>
+                <div className="text-muted-foreground" style={{ lineHeight: '1.2' }}>активных</div>
               </div>
               <div className="text-center">
-                <div className="font-bold text-foreground">{filteredSuperpowers.length}</div>
-                <div className="text-muted-foreground">найдено</div>
+                <div className="font-bold text-foreground" style={{ lineHeight: '1.2' }}>{filteredSuperpowers.length}</div>
+                <div className="text-muted-foreground" style={{ lineHeight: '1.2' }}>найдено</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -854,7 +786,7 @@ export function MegapowersLibraryScreen({
                     }
                   `}
                 >
-                  {category.emoji && <span className="text-xs">{category.emoji}</span>}
+                  {category.emoji && <span>{category.emoji}</span>}
                   {category.name}
                 </motion.button>
               ))}
@@ -870,10 +802,8 @@ export function MegapowersLibraryScreen({
           >
             <div className="flex gap-1 p-1 bg-muted rounded-lg">
               {[
-                { mode: 'плитки' as ViewMode, icon: Grid3X3, label: 'Плитки - компактный вид' },
-                { mode: 'список' as ViewMode, icon: List, label: 'Список - построчно' },
-                { mode: 'таблица' as ViewMode, icon: BarChart3, label: 'Таблица - для анализа' },
-                { mode: 'галерея' as ViewMode, icon: Map, label: 'Галерея - подробно' }
+                { mode: 'галерея' as ViewMode, icon: Grid3X3, label: 'Галерея - компактные карточки' },
+                { mode: 'список' as ViewMode, icon: List, label: 'Список - построчно' }
               ].map(({ mode, icon: Icon, label }) => (
                 <motion.button
                   key={mode}

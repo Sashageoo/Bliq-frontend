@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { OnboardingWelcomeScreen } from './components/OnboardingWelcomeScreen';
+import { OnboardingAuthScreen } from './components/OnboardingAuthScreen';
 import { OnboardingProfileTypeScreen } from './components/OnboardingProfileTypeScreen';
 import { OnboardingSuperpowersExplainScreen } from './components/OnboardingSuperpowersExplainScreen';
 import { OnboardingBliksExplainScreen } from './components/OnboardingBliksExplainScreen';
@@ -11,19 +12,21 @@ import { OnboardingDebugPanel } from './components/OnboardingDebugPanel';
 import { ProfileScreen } from './components/ProfileScreen';
 import { MegapowersLibraryScreen } from './components/SuperpowersLibraryScreen';
 import { SuperpowerHubScreen } from './components/SuperpowerHubScreen';
+import { TopScreen } from './components/TopScreen';
 import { SettingsScreen } from './components/SettingsScreen';
 import { BliksScreen } from './components/BliksScreen';
 import { FeedScreen } from './components/FeedScreen';
 import { CameraCreateScreen } from './components/CameraCreateScreen';
-import { TrendsScreen } from './components/TrendsScreen';
+import { IncomingBliksScreen } from './components/IncomingBliksScreen';
+import { BliksSettingsModal } from './components/BliksSettingsModal';
 import { BlikDetailScreen } from './components/BlikDetailScreen';
 import { OtherUserProfileScreen } from './components/OtherUserProfileScreen';
-import { BusinessProfileScreen } from './components/BusinessProfileScreen';
 import { FriendsScreen } from './components/FriendsScreen';
 import { ValueMapScreen } from './components/ValueMapScreen';
 import { BusinessValueMapScreen } from './components/BusinessValueMapScreen';
 import { PersonalSiteScreen } from './components/PersonalSiteScreen';
 import { CreateValueMapScreen } from './components/CreateValueMapScreen';
+import { NotificationsScreen, Notification } from './components/NotificationsScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import { AppBackground } from './components/AppBackground';
 import { Sidebar } from './components/Sidebar';
@@ -168,7 +171,7 @@ const mapPersonalSuperpowerToBusiness = (personalName: string, emoji: string): {
   }
   
   if (lowercaseName.includes('маркетинг') || lowercaseName.includes('продаж') || lowercaseName.includes('промо') || lowercaseName.includes('реклам')) {
-    return { category: 'Drive', businessName: 'Рыночная экспансия', businessDescription: 'Агрессивное продвижение и захват новых рынков' };
+    return { category: 'Drive', businessName: 'Рыночная экспансия', businessDescription: 'Агрессивное продвижение и ��ахват новых рынков' };
   }
 
   // По умолчанию относим к Flow
@@ -183,17 +186,17 @@ const mapPersonalSuperpowerToBusiness = (personalName: string, emoji: string): {
 const INITIAL_USER_DATA = {
   name: 'Risha Bliq',
   profileType: 'personal' as ProfileType,
-  status: 'Creative Visionary',
-  location: 'Pacific Coast',
-  email: 'risha.bliq@example.com',
+  status: 'Creative Designer & Digital Innovator',
+  location: 'Москва, Россия',
+  email: 'risha@bliq.app',
   phone: '+7 (999) 123-45-67',
-  bio: 'Творческий визионер и эксперт по UX/UI дизайну. Увлекаюсь созданием инновационных цифровых продуктов, которые меняют жизнь людей к лучшему. В свободное время изучаю психологию цвета и практикую медитацию.',
-  website: 'https://rishabliq.com',
-  birthDate: '1995-03-15',
-  occupation: 'UX/UI Designer & Creative Director',
-  interests: ['Диз������йн', 'Технологии', 'Медитация', 'Путешествия', 'Фотография', 'Психология'],
+  bio: 'Создаю вдохновляющие продукты и помогаю людям раскрывать свои суперсилы. Верю в силу креативнос��и и ��ехнологий для позитивных изменений.',
+  website: 'https://risha.bliq.app',
+  birthDate: '1995-06-15',
+  occupation: 'Creative Designer & Product Manager',
+  interests: ['Дизайн', 'Технологии', 'Креативность', 'Саморазвитие', 'Фотография'],
   socialLinks: {
-    instagram: '@risha_bliq',
+    instagram: '@risha.bliq',
     twitter: '@rishabliq',
     linkedin: 'https://linkedin.com/in/rishabliq',
     github: 'https://github.com/rishabliq'
@@ -201,39 +204,33 @@ const INITIAL_USER_DATA = {
   privacy: {
     showEmail: true,
     showPhone: false,
-    showBirthDate: true,
+    showBirthDate: false,
     allowFriendRequests: true,
     showOnlineStatus: true
   },
-  // Поля для бизнес-профилей
-  businessInfo: {
-    companyName: '',
-    industry: '',
-    founded: '',
-    employees: '',
-    revenue: '',
-    description: '',
-    verified: false,
-    verificationDate: null,
-    verificationDocuments: []
-  },
-  backgroundImage: 'https://images.unsplash.com/photo-1646038572815-43fe759e459b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGdyYWRpZW50JTIwcHVycGxlfGVufDF8fHx8MTc1ODI0NjA2N3ww&ixlib=rb-4.1.0&q=80&w=1080',
+  backgroundImage: 'https://images.unsplash.com/photo-1646038572815-43fe759e459b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGdyYWRpZW50JTIwcHVycGxlfGVufDF8fHx8MTc1ODI0NjA2N3ww&ixlib=rb-4.1.0&q=80&w=1080', // 💜 Чистый фиолетовый градиент как в ленте
   avatarImage: avatarImage,
   isOnline: true,
   metrics: {
-    bliks: 247,
-    friends: 23,
-    superpowers: 3
+    bliks: 234,
+    friends: 67,
+    superpowers: 9
   },
   topSuperpowers: [
-    { name: 'Крутой стиль', emoji: '❄️', value: 84, energy: 97 },
-    { name: 'Креативность', emoji: '🧠', value: 78, energy: 95 },
-    { name: 'Харизма', emoji: '👑', value: 88, energy: 89 }
+    { name: 'Креативность', emoji: '💡', value: 85, energy: 89 },
+    { name: 'Контент-маркетинг', emoji: '📱', value: 78, energy: 82 },
+    { name: 'Межличностное общение', emoji: '💬', value: 72, energy: 75 },
+    { name: 'Харизма', emoji: '👑', value: 69, energy: 78 },
+    { name: 'Крутой стиль', emoji: '❄️', value: 76, energy: 71 },
+    { name: 'Лидерство', emoji: '⭐', value: 65, energy: 68 },
+    { name: 'Энергичность', emoji: '⚡', value: 82, energy: 85 },
+    { name: 'Решение проблем', emoji: '💪', value: 74, energy: 77 },
+    { name: 'Командная работа', emoji: '🤝', value: 68, energy: 72 }
   ]
 };
 
-type Screen = 'onboarding-welcome' | 'onboarding-profile-type' | 'onboarding-superpowers-explain' | 'onboarding-bliks-explain' | 'onboarding-value-map-explain' | 'onboarding-setup' | 'onboarding-business-setup' | 'onboarding-complete' | 'profile' | 'value-map' | 'library' | 'detail' | 'settings' | 'bliks' | 'feed' | 'create' | 'trends' | 'blik-detail' | 'other-profile' | 'friends' | 'personal-site' | 'create-value-map';
-type NavigationTab = 'feed' | 'superpowers' | 'create' | 'trends' | 'profile';
+type Screen = 'onboarding-welcome' | 'onboarding-auth' | 'onboarding-profile-type' | 'onboarding-superpowers-explain' | 'onboarding-bliks-explain' | 'onboarding-value-map-explain' | 'onboarding-setup' | 'onboarding-business-setup' | 'onboarding-complete' | 'profile' | 'value-map' | 'library' | 'top' | 'detail' | 'settings' | 'bliks' | 'feed' | 'create' | 'incoming-bliks' | 'blik-detail' | 'other-profile' | 'friends' | 'notifications' | 'personal-site' | 'create-value-map';
+type NavigationTab = 'feed' | 'top' | 'create' | 'bliks' | 'profile';
 
 // Тип для других пользователей
 interface OtherUser {
@@ -259,6 +256,7 @@ interface OtherUser {
     verified: boolean;
     verificationDate: string | null;
     verificationDocuments: any[];
+    brandHeader?: string; // Брендированная шапка для бизнес-профилей
   };
   metrics: {
     bliks: number;
@@ -309,6 +307,73 @@ export default function App() {
     }
   };
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // 🔔 СИСТЕМА УВЕДОМЛЕНИЙ
+  const [notifications, setNotifications] = useState<Notification[]>(() => [
+    {
+      id: '1',
+      type: 'blik',
+      title: 'Новый блик от Алексей К.',
+      message: 'Невероятный дизайн интерфейса! Твоя креативность просто зашкаливает 🎨✨',
+      avatar: alexeyAvatarImage,
+      timestamp: '2 часа назад',
+      isRead: false,
+      userId: 'alexey-korneev',
+      blikId: '1',
+      superpowerName: 'Креативность'
+    },
+    {
+      id: '2',
+      type: 'like',
+      title: 'Мария С. оценила твой блик',
+      message: 'Лайк за твой блик о лидерстве',
+      avatar: mariaAvatarImage,
+      timestamp: '5 часов назад',
+      isRead: false,
+      userId: 'maria-smirnova',
+      blikId: '7'
+    },
+    {
+      id: '3',
+      type: 'comment',
+      title: 'Новый комментарий от Игорь В.',
+      message: 'Просто невероятно! 🔥',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      timestamp: '8 часов назад',
+      isRead: true,
+      userId: 'igor-volkov',
+      blikId: '1'
+    },
+    {
+      id: '4',
+      type: 'superpower',
+      title: 'Рост суперсилы!',
+      message: 'Твоя суперсила "Креативность" выросла до 78 баллов! 🚀',
+      avatar: INITIAL_USER_DATA.avatarImage,
+      timestamp: '1 день назад',
+      isRead: true,
+      superpowerName: 'Креативность'
+    },
+    {
+      id: '5',
+      type: 'friend',
+      title: 'Анна Петрова добавила тебя в друзья',
+      message: 'Теперь вы можете обмениваться бликами!',
+      avatar: 'https://images.unsplash.com/photo-1697095098675-1d02496ef86a?w=100&h=100&fit=crop&crop=face',
+      timestamp: '2 дня назад',
+      isRead: true,
+      userId: 'anna-petrova'
+    },
+    {
+      id: '6',
+      type: 'achievement',
+      title: 'Новое достижение разблокировано!',
+      message: '🏆 "Вдохновитель" - Получено 50 лайков на блики',
+      avatar: INITIAL_USER_DATA.avatarImage,
+      timestamp: '3 дня назад',
+      isRead: true
+    }
+  ]);
 
   // Глобальные горячие клавиши для поиска
   React.useEffect(() => {
@@ -873,7 +938,7 @@ export default function App() {
       {
         id: 'tsekh85-9',
         type: 'photo' as const,
-        content: 'Артизанский хлеб на закваске - это шедевр! Чувствуется инновационный подход к традиционным рецептам 🧠💡',
+        content: 'Артизанский хлеб на закваске - это шедев��! Чувствуется инновационный подход к традиционным рецептам 🧠💡',
         mediaUrl: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
         rating: 5,
         author: {
@@ -1249,7 +1314,7 @@ export default function App() {
     {
       id: '9',
       type: 'video' as const,
-      content: 'Восхищаюсь твоим стилем! Каждая деталь продумана идеально ❄️',
+      content: 'Восхищаюсь тво��м стилем! Каждая деталь продумана идеально ❄️',
       mediaUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwc3R5bGUlMjBvdXRmaXR8ZW58MXx8fHwxNzU4MzU2ODI3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
       author: {
         name: 'Risha Bliq',
@@ -1341,6 +1406,91 @@ export default function App() {
         { name: 'Alex Ivanov', avatar: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=100&h=100&fit=crop&crop=face' },
         { name: 'Sara Kim', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face' }
       ]
+    }
+  ]);
+
+  // Отклоненные блики - можно восстановить позже
+  const [declinedBliks, setDeclinedBliks] = useState<BlikData[]>([]);
+  
+  // Настройки автоматического принятия бликов
+  const [bliksAutoSettings, setBliksAutoSettings] = useState({
+    autoAcceptFromFriends: [] as string[],
+    autoDeclineFromBlocked: [] as string[],
+    autoAcceptSuperpowers: [] as string[],
+    requireApproval: false
+  });
+  
+  const [isBliksSettingsOpen, setIsBliksSettingsOpen] = useState(false);
+
+  // Входящие блики - ожидают подтверждения (уменьшено для быстрой загрузки)
+  const [incomingBliks, setIncomingBliks] = useState<BlikData[]>(() => [
+    {
+      id: 'incoming-1',
+      type: 'photo' as const,
+      content: 'Твой подход к решению этой задачи просто гениален! Восхищаюсь твоей изобретательностью 🧠✨',
+      mediaUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWFtd29yayUyMHN1Y2Nlc3N8ZW58MXx8fHwxNzU4MzU2ODI1fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      author: {
+        name: 'Максим Стеллар',
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face',
+        isOnline: true
+      },
+      recipient: {
+        name: 'Risha Bliq',
+        avatar: user.avatarImage
+      },
+      superpower: {
+        name: 'Аналитическое мышление',
+        emoji: '🧠'
+      },
+      timestamp: 'только что',
+      likes: 0,
+      comments: 0,
+      isLiked: false
+    },
+    {
+      id: 'incoming-2',
+      type: 'video' as const,
+      content: 'Потрясающая работа с командой! Ты умеешь объединять людей и вдохновлять их на результат 🤝🌟',
+      mediaUrl: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWFtJTIwd29ya3xlbnwxfHx8fDE3NTgzNTY4Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      author: {
+        name: 'Ольга Маринова',
+        avatar: 'https://images.unsplash.com/photo-1756588534346-e8899364757b?w=100&h=100&fit=crop&crop=face',
+        isOnline: false
+      },
+      recipient: {
+        name: 'Risha Bliq',
+        avatar: user.avatarImage
+      },
+      superpower: {
+        name: 'Командная работа',
+        emoji: '🤝'
+      },
+      timestamp: '15 минут назад',
+      likes: 0,
+      comments: 0,
+      isLiked: false
+    },
+    {
+      id: 'incoming-3',
+      type: 'text' as const,
+      content: 'Невероятная энергия! После общения с тобой всегда чувствую прилив сил и вдохновения. Спасибо за заряд позитива! ⚡💪',
+      author: {
+        name: 'Сергей Волков',
+        avatar: 'https://images.unsplash.com/photo-1638128503215-c44ca91ce04b?w=100&h=100&fit=crop&crop=face',
+        isOnline: true
+      },
+      recipient: {
+        name: 'Risha Bliq',
+        avatar: user.avatarImage
+      },
+      superpower: {
+        name: 'Энергичность',
+        emoji: '⚡'
+      },
+      timestamp: '30 минут назад',
+      likes: 0,
+      comments: 0,
+      isLiked: false
     }
   ]);
 
@@ -1488,7 +1638,7 @@ export default function App() {
     {
       id: 'mega-charisma-3',
       type: 'text' as const,
-      content: 'Твоя способность влиять на людей и завоевывать их доверие - это настоящий дар! Продолжай в том же духе 👑💫',
+      content: 'Твоя способность вли��ть на людей и завоевывать их доверие - это настоящий дар! Продолжай в том же духе 👑💫',
       author: {
         name: 'Игорь Волков',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
@@ -1552,7 +1702,7 @@ export default function App() {
         { name: 'Фотография', emoji: '📸', value: 92, energy: 85 },
         { name: 'Креативность', emoji: '🧠', value: 85, energy: 88 },
         { name: 'Крутой стиль', emoji: '❄️', value: 79, energy: 82 },
-        { name: 'Редактирование', emoji: '✂️', value: 74, energy: 78 },
+        { name: 'Редактировани��', emoji: '✂️', value: 74, energy: 78 },
         { name: 'Визуальное мышление', emoji: '👁️', value: 68, energy: 71 },
         { name: 'Художественный вкус', emoji: '🎨', value: 65, energy: 69 }
       ]
@@ -1572,7 +1722,7 @@ export default function App() {
         { name: 'Креативность', emoji: '🧠', value: 76, energy: 72 },
         { name: 'Командная работа', emoji: '🤝', value: 68, energy: 65 },
         { name: 'Гостеприимство', emoji: '🏠', value: 62, energy: 59 },
-        { name: 'Организованность', emoji: '📋', value: 58, energy: 55 }
+        { name: 'Организованн��сть', emoji: '📋', value: 58, energy: 55 }
       ]
     },
     'elena-rybakova': {
@@ -1739,8 +1889,8 @@ export default function App() {
         { name: 'Йога', emoji: '🧘‍♀️', value: 96, energy: 94 },
         { name: 'Mindfulness', emoji: '☯️', value: 92, energy: 91 },
         { name: 'Здоровый образ жизни', emoji: '💚', value: 89, energy: 87 },
-        { name: 'Медитация', emoji: '🕉️', value: 94, energy: 92 },
-        { name: 'Wellness-коучинг', emoji: '🌟', value: 86, energy: 84 },
+        { name: 'М��д��тация', emoji: '🕉️', value: 94, energy: 92 },
+        { name: 'Wellness-коучи��г', emoji: '🌟', value: 86, energy: 84 },
         { name: 'Баланс тела и разума', emoji: '⚖️', value: 83, energy: 81 },
         { name: 'Дыхательные практики', emoji: '🌬️', value: 79, energy: 77 },
         { name: 'Релаксация', emoji: '🌸', value: 76, energy: 74 },
@@ -1806,7 +1956,7 @@ export default function App() {
         { name: 'Защита данных', emoji: '🛡️', value: 88, energy: 84 },
         { name: 'Сетевая безопасность', emoji: '🌐', value: 85, energy: 81 },
         { name: 'Криптография', emoji: '🔐', value: 82, energy: 78 },
-        { name: 'Инцидент-реагирование', emoji: '🚨', value: 79, energy: 75 },
+        { name: 'Инцидент-реагиров��ние', emoji: '🚨', value: 79, energy: 75 },
         { name: 'Обучение безопасности', emoji: '🎓', value: 76, energy: 72 },
         { name: 'Пентестинг', emoji: '⚔️', value: 89, energy: 85 }
       ]
@@ -1857,7 +2007,7 @@ export default function App() {
       id: 'karina-vasilieva',
       name: 'Карина Васильева',
       status: 'Social Media Strategist & Content Creator',
-      location: 'Ростов-на-Дону, Россия',
+      location: 'Ростов-на-Дону, Ро��сия',
       bio: 'Стратег социальных медиа и создатель контент��. Помогаю брендам находить свой голос в цифровом пространстве и строить аутентичные отношения с ��удиторией.',
       avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
       backgroundImage: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2NpYWwlMjBtZWRpYSUyMGNvbnRlbnR8ZW58MXx8fHwxNzU4MjQ2MDY3fDA&ixlib=rb-4.1.0&q=80&w=1080',
@@ -2182,7 +2332,7 @@ export default function App() {
         { name: 'Авторские рецепты', emoji: '🧠', value: 88, energy: 85 },
         { name: 'Инновации в выпечке', emoji: '💡', value: 82, energy: 79 },
         
-        // Body - Качество продукта
+        // Body - Качество продукт��
         { name: 'Качество ингредиентов', emoji: '💪', value: 97, energy: 95 },
         { name: 'Свежесть продукции', emoji: '🌟', value: 94, energy: 91 },
         
@@ -2191,7 +2341,7 @@ export default function App() {
         { name: 'Управление поставками', emoji: '📦', value: 83, energy: 81 },
         
         // Crew - Команда пекарей
-        { name: 'Профессиональная команда', emoji: '👥', value: 90, energy: 87 },
+        { name: 'Профессиональная команда', emoji: '���', value: 90, energy: 87 },
         { name: 'Мастерство пекарей', emoji: '👨‍🍳', value: 98, energy: 96 }
       ]
     },
@@ -2202,7 +2352,7 @@ export default function App() {
       name: 'NeoTech Solutions',
       status: 'AI-powered Software Development Company',
       location: 'Москва, Россия',
-      bio: 'Мы создаем передовые AI-решения для бизнеса. Наша команда разрабатывает инновационные программные продукты, которые автоматизируют процессы и повышают эффективность компаний. Специализируемся на машинном обучении, чат-ботах и системах аналитики.',
+      bio: 'Мы создаем передовые AI-решения для бизнеса. Наша команда разрабатывает инновационные программные продукты, которые автоматизируют процессы и повышают эффективность компаний. Специализи��уемся на машинном обучении, чат-ботах и системах аналитики.',
       avatar: 'https://images.unsplash.com/photo-1559223607-b4d0555ae227?w=100&h=100&fit=crop&crop=center',
       backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2a0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwY3liZXJwdW5rfGVufDF8fHx8MTc1ODI0NjA2N3ww&ixlib=rb-4.1.0&q=80&w=1080',
       isOnline: true,
@@ -2653,7 +2803,7 @@ export default function App() {
     
     switch (type) {
       case 'personal':
-        // Для персональных суперсил показываем только блики конкретного пользователя
+        // Для персональных суперсил показываем только блики конкретн��го пользователя
         if (ownerId) {
           // Сначала проверяем общие блики
           let userBliks = allBliks.filter(blik => 
@@ -2741,13 +2891,35 @@ export default function App() {
     
     // 🎯 ПРИОРИТЕТ 3: Бизнес-суперсилы (для бизнес-профилей)
     if (context === 'business-profile') {
+      // Сначала проверяем, это бизнес-профиль текущего пользователя
+      if (user.profileType === 'business' && !selectedOtherUser) {
+        const userBusinessSuperpower = user.topSuperpowers.find(sp => sp.name === superpowerName);
+        if (userBusinessSuperpower) {
+          console.log(`✅ Найдена бизнес-суперсила текущего пользователя \"${user.name}\": ${superpowerName}`);
+          const formattedBusinessSuperpower = {
+            id: `business-current-${superpowerName}`,
+            name: userBusinessSuperpower.name,
+            emoji: userBusinessSuperpower.emoji,
+            bliks: userBusinessSuperpower.value,
+            energy: userBusinessSuperpower.energy,
+            trend: userBusinessSuperpower.energy > 80 ? 'up' as const : userBusinessSuperpower.energy < 40 ? 'down' as const : 'stable' as const,
+            category: 'Mind',
+            type: 'business' as const,
+            companyName: user.businessInfo?.companyName || user.name,
+            companyId: 'current-user'
+          };
+          return { type: 'business' as const, data: formattedBusinessSuperpower };
+        }
+      }
+      
+      // Затем проверяем бизнес-суперсилы из глобальной базы данных
       const businessSuperpower = businessSuperpowers.find(sp => sp.name === superpowerName);
       if (businessSuperpower) {
         console.log(`✅ Найдена бизнес-суперсила: ${superpowerName}`);
         return { type: 'business' as const, data: businessSuperpower };
       }
       
-      // Для бизнес-профилей также проверяем, есть ли такая суперсила у бизнес-пользователя
+      // Для бизнес-профилей других пользователей проверяем их топ суперсилы
       if (selectedOtherUser && selectedOtherUser.profileType === 'business') {
         const businessUserSuperpower = selectedOtherUser.topSuperpowers.find(sp => sp.name === superpowerName);
         if (businessUserSuperpower) {
@@ -2773,7 +2945,7 @@ export default function App() {
     
     console.warn(`❌ Суперсила "${superpowerName}" не найдена ни в одном типе (контекст: "${context}", selectedOtherUser: ${selectedOtherUser?.name || 'none'})`);
     return null;
-  }, [userSuperpowers, businessSuperpowers, selectedOtherUser]);
+  }, [userSuperpowers, businessSuperpowers, selectedOtherUser, user.profileType, user.name, user.topSuperpowers, user.businessInfo]);
 
   // Функция для получения данных детального экрана суперсилы
   const getSuperpowerDetails = (superpowerName: string) => {
@@ -2788,7 +2960,7 @@ export default function App() {
       description: 'Искусство выстраивать глубокие и значимые отношения с людьми. Способность понимать других, эффективно коммуницировать и создавать атмосферу доверия.',
     },
     'Харизма': {
-      description: 'Природная способность притягивать и вдохновля��ь людей. Харизматичные личности легко завоевывают доверие и влияют на окружающих своей э����ргетикой.',
+      description: 'Природная способность притягивать и вдохновля��ь людей. Харизматичные личности легко завоевывают довери�� и влияют на окружающих своей э����ргетикой.',
     },
     'Крутой стиль': {
       description: 'Безупречное чувство стиля и эстетики. Способность создавать уникальные образы и вдохновлять других на самовыражение через внешний вид.',
@@ -2896,11 +3068,26 @@ export default function App() {
       setSelectedBlik(prev => prev ? updateBlikLike(prev) : null);
     }
 
+    // Создаём уведомление для автора блика (если это не наш блик)
+    const blik = [...receivedBliks, ...sentBliks].find(b => b.id === blikId);
+    if (blik && blik.author.name !== user.name) {
+      // В реальном приложении здесь будет отправка уведомления через API
+      // Для демо создаем уведомление только если ставим лайк не своему блику
+    }
+
     toast.success('Лайк! ❤️');
   };
 
   const handleCommentBlik = (blikId: string) => {
-    const blik = [...receivedBliks, ...sentBliks].find(b => b.id === blikId);
+    // Ищем блик в общих бликах, бликах отправленных и в бликах выбранного пользователя
+    let blik = [...receivedBliks, ...sentBliks].find(b => b.id === blikId);
+    
+    // Если не нашли в общих бликах, ищем в бликах выбранного другого пользователя
+    if (!blik && selectedOtherUser) {
+      const otherUserBliks = otherUsersBliks[selectedOtherUser.id] || [];
+      blik = otherUserBliks.find(b => b.id === blikId);
+    }
+    
     if (blik) {
       setSelectedBlik(blik);
       setCurrentScreen('blik-detail');
@@ -2910,7 +3097,15 @@ export default function App() {
   };
 
   const handleBlikDetail = (blikId: string) => {
-    const blik = [...receivedBliks, ...sentBliks].find(b => b.id === blikId);
+    // Ищем блик в общих бликах, бликах отправленных и в бликах выбранного пользователя
+    let blik = [...receivedBliks, ...sentBliks].find(b => b.id === blikId);
+    
+    // Если не нашли в общих бликах, ищем в бликах выбранного другого пользователя
+    if (!blik && selectedOtherUser) {
+      const otherUserBliks = otherUsersBliks[selectedOtherUser.id] || [];
+      blik = otherUserBliks.find(b => b.id === blikId);
+    }
+    
     if (blik) {
       setSelectedBlik(blik);
       setCurrentScreen('blik-detail');
@@ -3010,6 +3205,67 @@ export default function App() {
     setCurrentScreen('personal-site');
     setActiveTab('profile');
   };
+
+  // 🔔 ОБРАБОТЧИКИ УВЕДОМЛЕНИЙ
+  const handleNotifications = () => {
+    setCurrentScreen('notifications');
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    // Отмечаем как прочитанное
+    if (!notification.isRead) {
+      setNotifications(prev =>
+        prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n)
+      );
+    }
+
+    // Переходим на соответствующий экран в зависимости от типа уведомления
+    if (notification.blikId) {
+      // Открываем блик
+      const blik = [...receivedBliks, ...sentBliks].find(b => b.id === notification.blikId);
+      if (blik) {
+        setSelectedBlik(blik);
+        setCurrentScreen('blik-detail');
+      }
+    } else if (notification.userId) {
+      // Открываем профиль пользователя
+      handleUserProfile(notification.userId);
+    } else if (notification.superpowerName) {
+      // Открываем суперсилу
+      handleSuperpowerSelect(notification.superpowerName);
+    }
+  };
+
+  const handleMarkNotificationAsRead = (notificationId: string) => {
+    setNotifications(prev =>
+      prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+    );
+  };
+
+  const handleMarkAllNotificationsAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    toast.success('Все уведомления отмечены как прочитанные ✅');
+  };
+
+  const handleDeleteNotification = (notificationId: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    toast.success('Уведомление удалено 🗑️');
+  };
+
+  const handleClearAllNotifications = () => {
+    setNotifications([]);
+    toast.success('Все уведомления очищены 🗑️');
+  };
+
+  // Функция для добавления нового уведомления
+  const addNotification = useCallback((notification: Omit<Notification, 'id' | 'timestamp'>) => {
+    const newNotification: Notification = {
+      ...notification,
+      id: Date.now().toString(),
+      timestamp: 'только что'
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  }, []);
 
   // 🎯 ИСПРАВЛЕННАЯ ЛОГИКА: Выбор суперсилы с сохранением источника перехода
   const [superpowerContext, setSuperpowerContext] = useState<{
@@ -3118,6 +3374,32 @@ export default function App() {
     setTimeout(scrollToTop, 200);
   };
 
+  // Обработчики входящих бликов
+  const handleAcceptBlik = useCallback((blikId: string) => {
+    // Проверяем и в входящих, и в отклоненных
+    const blik = incomingBliks.find(b => b.id === blikId) || declinedBliks.find(b => b.id === blikId);
+    if (blik) {
+      // Добавляем блик в полученные
+      setReceivedBliks(prev => [blik, ...prev]);
+      // Удаляем из входящих
+      setIncomingBliks(prev => prev.filter(b => b.id !== blikId));
+      // Удаляем из отклоненных (если восстанавливаем)
+      setDeclinedBliks(prev => prev.filter(b => b.id !== blikId));
+      toast.success('Блик принят! Теперь он появился в ленте ✨');
+    }
+  }, [incomingBliks, declinedBliks]);
+
+  const handleDeclineBlik = useCallback((blikId: string) => {
+    const blik = incomingBliks.find(b => b.id === blikId);
+    if (blik) {
+      // Перемещаем в отклоненные
+      setDeclinedBliks(prev => [blik, ...prev]);
+      // Удаляем из входящих
+      setIncomingBliks(prev => prev.filter(b => b.id !== blikId));
+      toast.success('Блик отклонен. Можешь восстановить его позже');
+    }
+  }, [incomingBliks]);
+
   const handleTabChange = (tab: NavigationTab) => {
     setActiveTab(tab);
     // Очищаем контекст суперсилы при смене табов
@@ -3127,14 +3409,14 @@ export default function App() {
       case 'feed':
         setCurrentScreen('feed');
         break;
-      case 'superpowers':
-        setCurrentScreen('library');
+      case 'top':
+        setCurrentScreen('top');
         break;
       case 'create':
         setCurrentScreen('create');
         break;
-      case 'trends':
-        setCurrentScreen('trends');
+      case 'bliks':
+        setCurrentScreen('incoming-bliks');
         break;
       case 'profile':
         setCurrentScreen('profile');
@@ -3255,6 +3537,14 @@ export default function App() {
       'Артем В.': 'alexey-korneev', // Мапим на существующего пользоват��ля
       'Софья М.': 'maria-smirnova', // Мапи�� на существующего пользователя
       
+      // Получатели из sentBliks
+      'Максим Петров': 'maxim-stellar',
+      'Анна Сидорова': 'anna-petrova',
+      'Елена Смирнова': 'elena-rybakova',
+      'Игорь Новиков': 'igor-volkov',
+      'Ольга Кузнецова': 'olga-marinova',
+      'Владимир Петрович': 'viktor-sokolov',
+      
       // Авторы бликов для Цех85
       'Анна М.': 'anna-petrova',
       'Михаил П.': 'igor-volkov', // Мапим на существующего пользователя
@@ -3269,7 +3559,7 @@ export default function App() {
       'Станислав Г.': 'sergey-volkov',
       'Наталья В.': 'natalia-belova',
       
-      // Полные имена
+      // Пол��ые имена
       'Алексей Корнеев': 'alexey-korneev',
       'Мария Смирнова': 'maria-smirnova',
       'Игорь Волков': 'igor-volkov',
@@ -3354,10 +3644,6 @@ export default function App() {
     setIsSidebarOpen(false);
   };
 
-  const handleNotifications = () => {
-    toast.success('Уведомления открыты! 🔔');
-  };
-
   const handleAboutBliq = () => {
     setIsAboutBliqOpen(true);
     setIsSidebarOpen(false); // Закрываем сайдбар при открытии справки
@@ -3380,9 +3666,12 @@ export default function App() {
   };
 
   // Обработчики онбординга
-  const handleOnboardingNext = (step: 'welcome' | 'profile-type' | 'superpowers-explain' | 'bliks-explain' | 'value-map-explain' | 'setup' | 'business-setup') => {
+  const handleOnboardingNext = (step: 'welcome' | 'auth' | 'profile-type' | 'superpowers-explain' | 'bliks-explain' | 'value-map-explain' | 'setup' | 'business-setup') => {
     switch (step) {
       case 'welcome':
+        setCurrentScreen('onboarding-auth');
+        break;
+      case 'auth':
         setCurrentScreen('onboarding-profile-type');
         break;
       case 'profile-type':
@@ -3411,10 +3700,13 @@ export default function App() {
     }
   };
 
-  const handleOnboardingBack = (step: 'profile-type' | 'superpowers-explain' | 'bliks-explain' | 'value-map-explain' | 'setup' | 'business-setup') => {
+  const handleOnboardingBack = (step: 'auth' | 'profile-type' | 'superpowers-explain' | 'bliks-explain' | 'value-map-explain' | 'setup' | 'business-setup') => {
     switch (step) {
-      case 'profile-type':
+      case 'auth':
         setCurrentScreen('onboarding-welcome');
+        break;
+      case 'profile-type':
+        setCurrentScreen('onboarding-auth');
         break;
       case 'superpowers-explain':
         setCurrentScreen('onboarding-profile-type');
@@ -3502,7 +3794,7 @@ export default function App() {
       // Возвращаемся на предыдущий экран в зависимости от источника перехода
       if (superpowerContext?.source === 'library') {
         setCurrentScreen('library');
-        setActiveTab('superpowers');
+        setActiveTab('top');
       } else if (superpowerContext?.source === 'other-user' || selectedOtherUser) {
         // Если мы смотрели суперсилу другого пользователя, возвращаемся в его профиль
         setCurrentScreen('other-profile');
@@ -3517,7 +3809,11 @@ export default function App() {
           setActiveTab('profile');
         }
       }
-    } else if (currentScreen === 'settings' || currentScreen === 'bliks' || currentScreen === 'friends' || currentScreen === 'create-value-map') {
+    } else if (currentScreen === 'settings' || currentScreen === 'friends' || currentScreen === 'notifications' || currentScreen === 'create-value-map') {
+      setCurrentScreen('profile');
+      setActiveTab('profile');
+    } else if (currentScreen === 'bliks') {
+      // Возврат на профиль при выходе из экрана Блики
       setCurrentScreen('profile');
       setActiveTab('profile');
     } else if (currentScreen === 'value-map') {
@@ -3525,7 +3821,7 @@ export default function App() {
       if (selectedOtherUser) {
         setCurrentScreen('other-profile');
       } else {
-        // Если это была наша карта, возвращаемся в профиль
+        // Если это была наша карта, возвращаемся в ��рофиль
         setCurrentScreen('profile');
         setActiveTab('profile');
       }
@@ -3564,6 +3860,15 @@ export default function App() {
         return (
           <OnboardingWelcomeScreen
             onNext={() => handleOnboardingNext('welcome')}
+            onSkip={handleOnboardingSkip}
+          />
+        );
+
+      case 'onboarding-auth':
+        return (
+          <OnboardingAuthScreen
+            onNext={() => handleOnboardingNext('auth')}
+            onBack={() => handleOnboardingBack('auth')}
             onSkip={handleOnboardingSkip}
           />
         );
@@ -3644,6 +3949,7 @@ export default function App() {
             onSearch={handleSearch}
             onBlikDetail={handleBlikDetail}
             onSuperpowerClick={handleSuperpowerSelect}
+            unreadNotificationsCount={notifications.filter(n => !n.isRead).length}
           />
         );
 
@@ -3665,10 +3971,24 @@ export default function App() {
           />
         );
 
-      case 'trends':
+      case 'incoming-bliks':
         return (
-          <TrendsScreen
-            trendingSuperpowers={trendingSuperpowers}
+          <IncomingBliksScreen
+            incomingBliks={incomingBliks}
+            declinedBliks={declinedBliks}
+            onAccept={handleAcceptBlik}
+            onDecline={handleDeclineBlik}
+            onBlikDetail={handleBlikDetail}
+            onOpenSettings={() => setIsBliksSettingsOpen(true)}
+            userSuperpowers={userSuperpowers.map(sp => ({
+              name: sp.name,
+              emoji: sp.emoji,
+              energy: sp.energy
+            }))}
+            onSidebar={handleSidebar}
+            onSearch={handleSearch}
+            onNotifications={handleNotifications}
+            unreadNotificationsCount={notifications.filter(n => !n.isRead).length}
           />
         );
 
@@ -3684,35 +4004,7 @@ export default function App() {
           }))
         };
         
-        // Если у текущего пользователя бизнес-профиль, используем специальный экран
-        if (user.profileType === 'business') {
-          return (
-            <BusinessProfileScreen
-              user={userWithPersonalSuperpowers as any}
-              userBliks={[...receivedBliks, ...sentBliks]}
-              onBack={handleBack}
-              onChat={handleChat}
-              onAddFriend={handleAddFriend}
-              onSubscribe={handleSubscribe}
-              onShare={handleShare}
-              onSuperpowerClick={handleSuperpowerSelect}
-              onLike={handleLikeBlik}
-              onComment={handleCommentBlik}
-              onShareBlik={handleShareBlik}
-              onBlikDetail={handleBlikDetail}
-              onUserProfile={handleUserProfile}
-              onViewFriends={handleViewFriends}
-              onViewSuperpowersMap={handleViewMap}
-              onCreateBlik={() => {
-                setCurrentScreen('create');
-                setActiveTab('create');
-              }}
-              onViewPersonalSite={handleViewPersonalSite}
-            />
-          );
-        }
-        
-        // Для обычных профилей используем стандартный экран
+        // Используем ProfileScreen для всех типов профилей (личных и бизнес)
         return (
           <ProfileScreen
             user={userWithPersonalSuperpowers}
@@ -3762,8 +4054,177 @@ export default function App() {
           />
         );
       
+      case 'top':
+        // 🏆 ТОП - лучший контент со всех категорий
+        const topPeople = [
+          {
+            id: 'anna-petrova',
+            name: 'Анна Петрова',
+            avatar: 'https://images.unsplash.com/photo-1697095098675-1d02496ef86a?w=100&h=100&fit=crop&crop=face',
+            status: 'UX/UI Designer',
+            isOnline: true,
+            metrics: { bliks: 445, friends: 67, superpowers: 9 },
+            trendScore: 98
+          },
+          {
+            id: 'maxim-stellar',
+            name: 'Максим Стеллар',
+            avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face',
+            status: 'Astrophysicist',
+            isOnline: true,
+            metrics: { bliks: 523, friends: 78, superpowers: 12 },
+            trendScore: 96
+          },
+          {
+            id: 'sergey-volkov',
+            name: 'Сергей Волков',
+            avatar: 'https://images.unsplash.com/photo-1638128503215-c44ca91ce04b?w=100&h=100&fit=crop&crop=face',
+            status: 'Extreme Sports Athlete',
+            isOnline: true,
+            metrics: { bliks: 356, friends: 89, superpowers: 11 },
+            trendScore: 94
+          },
+          {
+            id: 'alexey-korneev',
+            name: 'Алексей Корнеев',
+            avatar: alexeyAvatarImage,
+            status: 'Senior Frontend Developer',
+            isOnline: true,
+            metrics: { bliks: 324, friends: 45, superpowers: 8 },
+            trendScore: 92
+          },
+          {
+            id: 'elena-rybakova',
+            name: 'Елена Рыбакова',
+            avatar: 'https://images.unsplash.com/photo-1736697027030-d3407ffc7c92?w=100&h=100&fit=crop&crop=face',
+            status: 'Dance Instructor',
+            isOnline: true,
+            metrics: { bliks: 298, friends: 52, superpowers: 7 },
+            trendScore: 90
+          },
+          {
+            id: 'olga-marinova',
+            name: 'Ольга Маринова',
+            avatar: 'https://images.unsplash.com/photo-1756588534346-e8899364757b?w=100&h=100&fit=crop&crop=face',
+            status: 'Marine Biologist',
+            isOnline: false,
+            metrics: { bliks: 278, friends: 54, superpowers: 8 },
+            trendScore: 88
+          },
+          {
+            id: 'maria-smirnova',
+            name: 'Мария Смирнова',
+            avatar: mariaAvatarImage,
+            status: 'Creative Photographer',
+            isOnline: false,
+            metrics: { bliks: 267, friends: 38, superpowers: 6 },
+            trendScore: 85
+          },
+          {
+            id: 'karina-vasilieva',
+            name: 'Карина Васильева',
+            avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
+            status: 'Social Media Strategist',
+            isOnline: true,
+            metrics: { bliks: 412, friends: 78, superpowers: 12 },
+            trendScore: 82
+          }
+        ];
+
+        const topBusinesses = [
+          {
+            id: 'neotech-solutions',
+            name: 'NeoTech Solutions',
+            avatar: 'https://images.unsplash.com/photo-1559223607-b4d0555ae227?w=100&h=100&fit=crop&crop=center',
+            industry: 'AI & Software Development',
+            verified: true,
+            metrics: { bliks: 892, followers: 156 },
+            trendScore: 99
+          },
+          {
+            id: 'finflow-solutions',
+            name: 'FinFlow Solutions',
+            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=center',
+            industry: 'Financial Technology',
+            verified: true,
+            metrics: { bliks: 789, followers: 312 },
+            trendScore: 97
+          },
+          {
+            id: 'pixel-perfect-studio',
+            name: 'Pixel Perfect Studio',
+            avatar: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=100&h=100&fit=crop&crop=center',
+            industry: 'Creative Design',
+            verified: true,
+            metrics: { bliks: 623, followers: 234 },
+            trendScore: 95
+          },
+          {
+            id: 'tsekh85-bakery',
+            name: 'Цех85',
+            avatar: tsekh85Logo,
+            industry: 'Artisan Bakery',
+            verified: true,
+            metrics: { bliks: 567, followers: 298 },
+            trendScore: 93
+          },
+          {
+            id: 'innovacorp',
+            name: 'InnovaCorp',
+            avatar: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop&crop=center',
+            industry: 'Digital Innovation',
+            verified: true,
+            metrics: { bliks: 456, followers: 89 },
+            trendScore: 90
+          },
+          {
+            id: 'strategic-minds-ltd',
+            name: 'Strategic Minds',
+            avatar: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=100&h=100&fit=crop&crop=center',
+            industry: 'Business Strategy',
+            verified: true,
+            metrics: { bliks: 345, followers: 167 },
+            trendScore: 87
+          }
+        ];
+
+        const topBliks = [
+          ...receivedBliks.slice(0, 3),
+          ...sentBliks.slice(0, 3)
+        ].sort((a, b) => b.likes - a.likes).slice(0, 6);
+
+        const topSuperpowers = [
+          { name: 'Креативность', emoji: '💡', bliks: 85, energy: 89, trend: 'up' as const, category: 'Mind', growthRate: 16 },
+          { name: 'Харизма', emoji: '👑', bliks: 84, energy: 87, trend: 'up' as const, category: 'Soul', growthRate: 45 },
+          { name: 'Программирование', emoji: '💻', bliks: 95, energy: 92, trend: 'up' as const, category: 'Mind', growthRate: 12 },
+          { name: 'Лидерство', emoji: '⭐', bliks: 82, energy: 85, trend: 'up' as const, category: 'Crew', growthRate: 11 },
+          { name: 'Дизайн', emoji: '🎨', bliks: 96, energy: 89, trend: 'up' as const, category: 'Style', growthRate: 28 },
+          { name: 'Энергичность', emoji: '⚡', bliks: 89, energy: 94, trend: 'up' as const, category: 'Body', growthRate: 7 },
+          { name: 'Контент-маркетинг', emoji: '📱', bliks: 78, energy: 82, trend: 'up' as const, category: 'Drive', growthRate: 19 },
+          { name: 'Фотография', emoji: '📸', bliks: 92, energy: 85, trend: 'up' as const, category: 'Style', growthRate: 15 }
+        ];
+
+        return (
+          <TopScreen
+            topPeople={topPeople}
+            topBusinesses={topBusinesses}
+            topBliks={topBliks}
+            topSuperpowers={topSuperpowers}
+            onUserProfile={handleUserProfile}
+            onBlikDetail={handleBlikDetail}
+            onSuperpowerDetail={handleSuperpowerSelect}
+            onLike={handleLikeBlik}
+            onComment={handleCommentBlik}
+            onShare={handleShareBlik}
+            onSidebar={handleSidebar}
+            onSearch={handleSearch}
+            onNotifications={handleNotifications}
+            unreadNotificationsCount={notifications.filter(n => !n.isRead).length}
+          />
+        );
+      
       case 'value-map':
-        // Определяем, чью карту ценности показываем
+        // Определяем, чью карту це��ности показываем
         if (selectedOtherUser) {
           // Карта ценности другого пользователя
           const otherUserSuperpowers = selectedOtherUser.topSuperpowers.map(sp => ({
@@ -3993,6 +4454,7 @@ export default function App() {
             onBlikDetail={handleBlikDetail}
             onSidebar={handleSidebar}
             onSearch={handleSearch}
+            onNotifications={handleNotifications}
             isOwner={isOwner}
             // Передаем данные о мегасиле
             isMegaSuperpower={isMegaSuperpower}
@@ -4009,12 +4471,16 @@ export default function App() {
             receivedBliks={receivedBliks}
             sentBliks={sentBliks}
             userProfileType={user.profileType || 'personal'}
-            onBack={handleBack}
             onLike={handleLikeBlik}
             onComment={handleCommentBlik}
             onShare={handleShareBlik}
             onBlikDetail={handleBlikDetail}
             onSuperpowerClick={handleSuperpowerSelect}
+            onUserProfile={handleUserProfile}
+            onSidebar={handleSidebar}
+            onSearch={handleSearch}
+            onNotifications={handleNotifications}
+            unreadNotificationsCount={notifications.filter(n => !n.isRead).length}
           />
         );
       
@@ -4045,43 +4511,8 @@ export default function App() {
         // Получаем блики для конкретного пользователя
         const userSpecificBliks = otherUsersBliks[selectedOtherUser.id] || [];
         
-        // Если это бизнес-профиль, используем специальный экран
-        if (selectedOtherUser.profileType === 'business') {
-          return (
-            <BusinessProfileScreen
-              user={selectedOtherUser as any}
-              userBliks={userSpecificBliks}
-              onBack={handleBack}
-              onChat={handleChat}
-              onAddFriend={handleAddFriend}
-              onSubscribe={handleSubscribe}
-              onShare={handleShare}
-              onSuperpowerClick={handleSuperpowerSelect}
-              onLike={handleLikeBlik}
-              onComment={handleCommentBlik}
-              onShareBlik={handleShareBlik}
-              onBlikDetail={handleBlikDetail}
-              onUserProfile={handleUserProfile}
-              onViewFriends={handleViewFriends}
-              onViewSuperpowersMap={() => {
-                setCurrentScreen('value-map');
-                setActiveTab('profile');
-              }}
-              onCreateBlik={() => {
-                setCurrentScreen('create');
-                setActiveTab('create');
-              }}
-              onViewPersonalSite={() => {
-                setCurrentScreen('personal-site');
-              }}
-              onSidebar={handleSidebar}
-              onSearch={handleSearch}
-              onNotifications={handleNotifications}
-            />
-          );
-        }
-        
-        // Для обычных профилей используем стандартный экран
+        // Используем OtherUserProfileScreen для всех типов профилей (личных и бизнес)
+        // Брендированная шапка будет отображаться автоматически для бизнес-профилей
         return (
           <OtherUserProfileScreen
             user={selectedOtherUser}
@@ -4125,6 +4556,21 @@ export default function App() {
             onUserProfile={handleUserProfile}
             onChat={handleChat}
             onAddFriend={handleAddFriend}
+            onSearch={handleSearch}
+          />
+        );
+
+      case 'notifications':
+        return (
+          <NotificationsScreen
+            notifications={notifications}
+            onBack={handleBack}
+            onNotificationClick={handleNotificationClick}
+            onMarkAsRead={handleMarkNotificationAsRead}
+            onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+            onDeleteNotification={handleDeleteNotification}
+            onClearAll={handleClearAllNotifications}
+            onSidebar={handleSidebar}
             onSearch={handleSearch}
           />
         );
@@ -4229,7 +4675,7 @@ export default function App() {
   };
 
   // Определяем нужно ли показывать навигацию
-  const shouldShowNavigation = isOnboardingCompleted && !['settings', 'bliks', 'detail', 'value-map', 'other-profile', 'friends', 'personal-site', 'create-value-map', 'create'].includes(currentScreen);
+  const shouldShowNavigation = isOnboardingCompleted && !['settings', 'bliks', 'value-map', 'friends', 'personal-site', 'create-value-map', 'create'].includes(currentScreen);
 
   return (
     <AppBackground>
@@ -4336,10 +4782,29 @@ export default function App() {
         />
       )}
       
+      {/* Bliks Settings Modal - настройки автоматического принятия */}
+      {isOnboardingCompleted && (
+        <BliksSettingsModal
+          isOpen={isBliksSettingsOpen}
+          onClose={() => setIsBliksSettingsOpen(false)}
+          settings={bliksAutoSettings}
+          onSave={(newSettings) => {
+            setBliksAutoSettings(newSettings);
+            setIsBliksSettingsOpen(false);
+          }}
+          friends={friendsList}
+          userSuperpowers={userSuperpowers.map(sp => ({
+            name: sp.name,
+            emoji: sp.emoji
+          }))}
+        />
+      )}
+      
       {shouldShowNavigation && (
         <BottomNavigation
           activeTab={activeTab}
           onTabChange={handleTabChange}
+          incomingBliksCount={incomingBliks.length}
         />
       )}
     </AppBackground>

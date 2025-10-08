@@ -74,7 +74,7 @@ export function OnboardingCompleteScreen({ onComplete }: OnboardingCompleteScree
           transition={{ duration: 0.8, delay: 0.5 }}
           className="text-xl text-purple-100 mb-12 max-w-md leading-relaxed"
         >
-          Твоя карта ценности готова! Теперь ты можешь развивать суперсилы, создавать блики и влиять на мир
+          Твоя карта начинает оживать! Теперь ты можешь делиться бликами и развивать суперсилы ✨
         </motion.p>
 
         {/* Следующие шаги */}
@@ -84,33 +84,33 @@ export function OnboardingCompleteScreen({ onComplete }: OnboardingCompleteScree
           transition={{ duration: 0.8, delay: 0.7 }}
           className="grid gap-4 mb-12 max-w-sm w-full"
         >
-          <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20">
-            <div className="w-12 h-12 rounded-full bg-purple-500/30 flex items-center justify-center">
-              <Rocket size={24} className="text-purple-300" />
+          <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 hover:border-purple-400/40 transition-all">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/40 to-pink-500/30 flex items-center justify-center">
+              <Rocket size={24} className="text-purple-200" />
             </div>
             <div className="text-left">
-              <h3 className="text-white font-semibold">Исследуй ленту</h3>
-              <p className="text-purple-200 text-sm">Смотри блики других пользователей</p>
+              <h3 className="text-white font-semibold">Влияй на суперсилы друзей</h3>
+              <p className="text-purple-200 text-sm">Твои блики усиливают их таланты</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20">
-            <div className="w-12 h-12 rounded-full bg-pink-500/30 flex items-center justify-center">
-              <Zap size={24} className="text-pink-300" />
+          <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 hover:border-pink-400/40 transition-all">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500/40 to-orange-500/30 flex items-center justify-center">
+              <Zap size={24} className="text-pink-200" />
             </div>
             <div className="text-left">
-              <h3 className="text-white font-semibold">Создай первый блик</h3>
-              <p className="text-purple-200 text-sm">Поддержи чьи-то суперсилы</p>
+              <h3 className="text-white font-semibold">Получай энергию от сообщества</h3>
+              <p className="text-purple-200 text-sm">Каждый блик прокачивает тебя</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20">
-            <div className="w-12 h-12 rounded-full bg-cyan-500/30 flex items-center justify-center">
-              <Users size={24} className="text-cyan-300" />
+          <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 hover:border-cyan-400/40 transition-all">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/40 to-blue-500/30 flex items-center justify-center">
+              <Users size={24} className="text-cyan-200" />
             </div>
             <div className="text-left">
-              <h3 className="text-white font-semibold">Найди друзей</h3>
-              <p className="text-purple-200 text-sm">Подключайся к интересным людям</p>
+              <h3 className="text-white font-semibold">Строй свою команду влияния</h3>
+              <p className="text-purple-200 text-sm">Окружай себя теми, кто делает тебя сильнее</p>
             </div>
           </div>
         </motion.div>
@@ -126,7 +126,7 @@ export function OnboardingCompleteScreen({ onComplete }: OnboardingCompleteScree
           className="w-full max-w-sm px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/25"
         >
           <Sparkles size={20} />
-          Начать использовать Bliq
+          Перейти в ленту
           <ArrowRight size={20} />
         </motion.button>
 
@@ -195,17 +195,7 @@ export function OnboardingCompleteScreen({ onComplete }: OnboardingCompleteScree
           </div>
         </motion.div>
 
-        {/* Мотивационная цитата */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 1.3 }}
-          className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center"
-        >
-          <p className="text-purple-200 text-sm italic">
-            "Каждый блик — это луч света, который делает чью-то суперсилу ярче"
-          </p>
-        </motion.div>
+
       </div>
     </div>
   );

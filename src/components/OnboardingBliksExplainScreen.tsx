@@ -79,33 +79,12 @@ export function OnboardingBliksExplainScreen({ onNext, onBack, onSkip }: Onboard
             transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
             className="w-full max-w-sm text-center"
           >
-            {/* Большая иконка бликов */}
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, type: "spring", bounce: 0.4 }}
-              className="w-32 h-32 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-500 shadow-2xl relative overflow-hidden"
-            >
-              {/* Glassmorphism overlay */}
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
-              <div className="absolute inset-2 rounded-full bg-gradient-to-t from-transparent via-white/5 to-white/20" />
-              
-              {/* Пульсирующий эффект */}
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 rounded-full bg-white/5"
-              />
-              
-              <Sparkles size={48} className="text-white relative z-10 drop-shadow-lg" />
-            </motion.div>
-
             {/* Эмодзи визуализация */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-2xl mb-4 tracking-wider"
+              className="text-4xl mb-6 tracking-wider"
             >
               ✨📸💬⚡
             </motion.div>
@@ -115,20 +94,10 @@ export function OnboardingBliksExplainScreen({ onNext, onBack, onSkip }: Onboard
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-2xl font-semibold text-white mb-4"
+              className="text-2xl font-semibold text-white mb-8"
             >
-              Что такое блики?
+              Блики - главный инструмент твоего влияния
             </motion.h2>
-
-            {/* Описание */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="text-white/80 mb-8 leading-relaxed"
-            >
-              Блики — это фото, видео или слова поддержки, которые друзья отправляют друг другу, чтобы отметить и усилить суперсилы. Они дают энергию и помогают расти!
-            </motion.p>
 
             {/* Компактный коллаж - все на одном экране */}
             <motion.div
@@ -320,7 +289,7 @@ export function OnboardingBliksExplainScreen({ onNext, onBack, onSkip }: Onboard
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-12"
               />
               
-              <span className="relative z-10">Понятно!</span>
+              <span className="relative z-10">Дальше</span>
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform relative z-10" />
             </motion.button>
           </motion.div>

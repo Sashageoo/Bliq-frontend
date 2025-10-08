@@ -10,6 +10,26 @@ interface OnboardingValueMapExplainScreenProps {
 }
 
 export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: OnboardingValueMapExplainScreenProps) {
+  // Рандомные аватары и ники для демонстрации
+  const randomAvatars = [
+    'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=80&h=80&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face'
+  ];
+  
+  const randomNicks = [
+    'Лиза Искра',
+    'Макс Стеллар',
+    'Аня Луна',
+    'Даша Нова',
+    'Саша Вектор'
+  ];
+  
+  // Выбираем рандомный аватар и ник (один раз при рендере)
+  const [randomAvatar] = React.useState(() => randomAvatars[Math.floor(Math.random() * randomAvatars.length)]);
+  const [randomNick] = React.useState(() => randomNicks[Math.floor(Math.random() * randomNicks.length)]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
@@ -118,36 +138,61 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
               {/* Используем стиль карты ценности из сайдбара */}
               <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/15 via-pink-500/12 to-orange-500/12 border border-purple-400/35 vibrant-card energy-glow">
                 
-                {/* Заголовок карты */}
+                {/* Заголовок карты с аватаром и ником */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.5 }}
-                  className="flex items-center justify-between mb-4"
+                  className="flex items-center gap-2 mb-4"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-400/40 to-pink-400/35 flex items-center justify-center energy-glow">
-                      <span className="text-sm">🗺️</span>
-                    </div>
-                    <span className="font-medium text-white">Карта ценности</span>
-                  </div>
+                  {/* Аватар */}
                   <motion.div
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                    className="text-lg font-bold text-purple-300"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6, type: "spring", bounce: 0.4 }}
+                    className="relative"
                   >
-                    74%
+                    <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-purple-400/60 energy-glow">
+                      <img 
+                        src={randomAvatar} 
+                        alt="User avatar" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* Пульсирующее свечение вокруг аватара */}
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.3, 1],
+                        opacity: [0.5, 0.15, 0.5]
+                      }}
+                      transition={{ 
+                        duration: 2.5, 
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 rounded-full bg-purple-400/40 blur-md -z-10"
+                    />
                   </motion.div>
+                  
+                  {/* Рандомный ник */}
+                  <motion.span
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 }}
+                    className="font-semibold text-white"
+                  >
+                    {randomNick}
+                  </motion.span>
                 </motion.div>
 
-                {/* Основные метрики */}
+                {/* Основные метрики - НОВЫЕ */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.6 }}
                   className="grid grid-cols-3 gap-3 mb-4"
                 >
-                  {/* Суперсилы */}
+                  {/* Суперсил */}
                   <div className="text-center">
                     <div className="text-purple-300 text-lg mb-1">⚡</div>
                     <motion.div
@@ -157,10 +202,10 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
                     >
                       12
                     </motion.div>
-                    <div className="text-xs text-slate-400">Суперсилы</div>
+                    <div className="text-xs text-slate-400">Суперсил</div>
                   </div>
 
-                  {/* Блики */}
+                  {/* Ценность */}
                   <div className="text-center">
                     <div className="text-yellow-300 text-lg mb-1">✨</div>
                     <motion.div
@@ -170,10 +215,10 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
                     >
                       247
                     </motion.div>
-                    <div className="text-xs text-slate-400">Блики</div>
+                    <div className="text-xs text-slate-400">Ценность</div>
                   </div>
 
-                  {/* Энергия */}
+                  {/* Влияние */}
                   <div className="text-center">
                     <div className="text-green-400 text-lg mb-1">🔋</div>
                     <motion.div
@@ -183,7 +228,7 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
                     >
                       74%
                     </motion.div>
-                    <div className="text-xs text-slate-400">Энергия</div>
+                    <div className="text-xs text-slate-400">Влияние</div>
                   </div>
                 </motion.div>
 
@@ -296,48 +341,121 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-2xl font-semibold text-white mb-4"
+              className="font-semibold text-white mb-12"
             >
               Карта ценности
             </motion.h2>
 
-            {/* Описание */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="text-white/80 mb-8 leading-relaxed"
-            >
-              Карта ценности — это живая визуализация твоих суперсил.
-              Она показывает твою уникальность, растёт от бликов друзей и отражает твое влияние на сообщество.
-            </motion.p>
-
-            {/* Ключевые особенности */}
+            {/* Ключевые особенности - ТОЛЬКО 2 САМЫХ ВАЖНЫХ */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="space-y-3 mb-8"
+              className="space-y-6 mb-12"
             >
               {[
-                { icon: Eye, text: 'Визуализация всех твоих суперсил', color: 'from-emerald-500 to-teal-500' },
-                { icon: TrendingUp, text: 'Отслеживание роста и динамики', color: 'from-blue-500 to-cyan-500' },
-                { icon: Target, text: 'Понимание своей ценности', color: 'from-purple-500 to-indigo-500' },
-                { icon: Map, text: 'Навигация для личного развития', color: 'from-orange-500 to-red-500' }
+                { icon: Eye, text: 'Визуализация твоих суперсил', color: 'from-emerald-500 to-teal-500' },
+                { icon: TrendingUp, text: 'Отслеживание роста', color: 'from-blue-500 to-cyan-500' }
               ].map((item, index) => {
                 const IconComponent = item.icon;
                 return (
                   <motion.div
                     key={item.text}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
-                    className="glass-card px-4 py-3 rounded-lg text-sm text-white/90 text-left flex items-center gap-3 group hover:scale-105 transition-transform"
+                    initial={{ opacity: 0, x: -50, scale: 0.8 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ 
+                      duration: 0.6, 
+                      delay: 0.7 + index * 0.15,
+                      type: "spring",
+                      bounce: 0.4 
+                    }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="flex items-center gap-5 text-left group cursor-pointer"
                   >
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${item.color} flex items-center justify-center flex-shrink-0`}>
-                      <IconComponent size={16} className="text-white" />
-                    </div>
-                    {item.text}
+                    {/* Неоновая точка */}
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        boxShadow: [
+                          `0 0 10px rgba(192, 132, 252, 0.3)`,
+                          `0 0 20px rgba(192, 132, 252, 0.6)`,
+                          `0 0 10px rgba(192, 132, 252, 0.3)`
+                        ]
+                      }}
+                      transition={{ 
+                        duration: 2 + index * 0.3, 
+                        repeat: Infinity, 
+                        ease: "easeInOut",
+                        delay: index * 0.4
+                      }}
+                      className="relative flex-shrink-0"
+                    >
+                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.color} flex items-center justify-center relative`}>
+                        <IconComponent size={20} className="text-white relative z-10" />
+                        
+                        {/* Внутреннее свечение */}
+                        <motion.div
+                          animate={{ 
+                            scale: [0.8, 1.2, 0.8],
+                            opacity: [0.4, 0.8, 0.4]
+                          }}
+                          transition={{ 
+                            duration: 2 + index * 0.2, 
+                            repeat: Infinity, 
+                            ease: "easeInOut",
+                            delay: index * 0.3
+                          }}
+                          className="absolute inset-1 rounded-full bg-white/20 backdrop-blur-sm"
+                        />
+                        
+                        {/* Внешнее неоновое свечение */}
+                        <motion.div
+                          animate={{ 
+                            scale: [1, 1.8, 1],
+                            opacity: [0.6, 0.2, 0.6]
+                          }}
+                          transition={{ 
+                            duration: 3 + index * 0.2, 
+                            repeat: Infinity, 
+                            ease: "easeInOut",
+                            delay: index * 0.2
+                          }}
+                          className={`absolute inset-0 w-12 h-12 rounded-full bg-gradient-to-r ${item.color} blur-lg`}
+                        />
+                      </div>
+                      
+                      {/* Дополнительные пульсирующие кольца */}
+                      <motion.div
+                        animate={{ 
+                          scale: [1, 2.2, 1],
+                          opacity: [0.3, 0.05, 0.3]
+                        }}
+                        transition={{ 
+                          duration: 4 + index * 0.3, 
+                          repeat: Infinity, 
+                          ease: "easeInOut",
+                          delay: 1 + index * 0.2
+                        }}
+                        className="absolute inset-0 w-12 h-12 rounded-full border border-white/20 blur-sm"
+                      />
+                    </motion.div>
+
+                    {/* Текст */}
+                    <motion.div
+                      initial={{ opacity: 0.7 }}
+                      whileHover={{ opacity: 1 }}
+                      className="text-white text-sm group-hover:text-white transition-colors relative"
+                    >
+                      {item.text}
+                      
+                      {/* Тонкая световая линия при ховере */}
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        whileHover={{ scaleX: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent origin-left"
+                      />
+                    </motion.div>
                   </motion.div>
                 );
               })}
@@ -360,7 +478,7 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-12"
               />
               
-              <span className="relative z-10">Создать карту!</span>
+              <span className="relative z-10">Дальше</span>
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform relative z-10" />
             </motion.button>
           </motion.div>
@@ -433,23 +551,6 @@ export function OnboardingValueMapExplainScreen({ onNext, onBack, onSkip }: Onbo
               <div className="absolute inset-0 w-2 h-2 rounded-full bg-white/10 blur-[1px]"></div>
             </motion.div>
           </div>
-        </motion.div>
-
-        {/* Кнопка продолжить */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="absolute bottom-20 right-6"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onNext}
-            className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center shadow-lg neon-border"
-          >
-            <ArrowRight size={20} className="text-white" />
-          </motion.button>
         </motion.div>
       </div>
     </div>

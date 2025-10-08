@@ -104,10 +104,10 @@ export function BlikDetailScreen({
 }: BlikDetailScreenProps) {
   const [newComment, setNewComment] = useState('');
   
-  // Используем комментарии из блика, если есть, иначе - моковые данные
-  const comments = blik.commentsList || [
+  // Моковые комментарии для демонстрации
+  const mockComments = [
     {
-      id: '1',
+      id: 'mock-1',
       author: {
         name: 'Алексей К.',
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
@@ -116,16 +116,16 @@ export function BlikDetailScreen({
       timestamp: '1 час назад'
     },
     {
-      id: '2',
+      id: 'mock-2',
       author: {
         name: 'Мария С.',
         avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face'
       },
       content: 'Спасибо за вдохновение! Буду применять в своих проектах ✨',
-      timestamp: '2 час назад'
+      timestamp: '2 часа назад'
     },
     {
-      id: '3',
+      id: 'mock-3',
       author: {
         name: 'Игорь В.',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face'
@@ -134,7 +134,7 @@ export function BlikDetailScreen({
       timestamp: '3 часа назад'
     },
     {
-      id: '4',
+      id: 'mock-4',
       author: {
         name: 'Елена Р.',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face'
@@ -143,7 +143,7 @@ export function BlikDetailScreen({
       timestamp: '4 часа назад'
     },
     {
-      id: '5',
+      id: 'mock-5',
       author: {
         name: 'Дмитрий М.',
         avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face'
@@ -151,6 +151,13 @@ export function BlikDetailScreen({
       content: 'Это именно то, что нужно было нашей команде. Супер!',
       timestamp: '5 часов назад'
     }
+  ];
+  
+  // ИСПРАВЛЕНИЕ: Объединяем реальные комментарии с моковыми для демонстрации
+  // Реальные комментарии идут первыми, затем моковые
+  const comments = [
+    ...(blik.commentsList || []),
+    ...mockComments
   ];
 
   const handleSubmitComment = () => {

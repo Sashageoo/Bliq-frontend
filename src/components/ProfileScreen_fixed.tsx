@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, MapPin, Settings, UserPlus, Share, Bell, ChevronDown, ChevronUp, Globe, Search, Menu } from 'lucide-react';
+import { ArrowLeft, MapPin, Settings, UserPlus, Share, Bell, ChevronDown, ChevronUp, Globe, Search, Menu, Building2, Users, TrendingUp, Calendar, Verified } from 'lucide-react';
 import { StatusBar } from './StatusBar';
 import { ProfileAvatar } from './ProfileAvatar';
 import { CompactMetricCard } from './CompactMetricCard';
 import { CompactSuperpowerCard } from './CompactSuperpowerCard';
 import { BlikCard, BlikData } from './BlikCard';
-import { BusinessProfileCard } from './BusinessProfileCard';
 import { BusinessSuperpowerCard } from './BusinessSuperpowerCard';
 
 
@@ -328,25 +327,96 @@ export function ProfileScreen({
             />
           </motion.div>
 
-          {/* Бизнес-информация (если это бизнес-профиль) */}
+          {/* Бизнес-информация (если это бизнес-профиль) - интегрирована в профиль */}
           {user.profileType === 'business' && user.businessInfo && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mb-8 px-6"
+              className="mb-8"
             >
-              <BusinessProfileCard
-                businessInfo={user.businessInfo}
-                metrics={user.metrics}
-                isOwner={true}
-                onRequestVerification={() => {
-                  // TODO: implement verification
-                }}
-                onUpgradeToPremium={() => {
-                  // TODO: implement premium upgrade
-                }}
-              />
+              {/* Компактная бизнес-информация */}
+              <div className="backdrop-blur-xl glass-card rounded-2xl p-5 space-y-4">
+                {/* Верификация */}
+                {user.businessInfo.verified && (
+                  <div className="flex items-center gap-2 text-emerald-400">
+                    <Verified size={18} className="fill-current" />
+                    <span className="text-sm font-medium">Верифицирован {user.businessInfo.verificationDate}</span>
+                  </div>
+                )}
+                
+                {/* Краткая информация о компании в 2 колонки */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 text-white/80">
+                    <Building2 size={16} className="text-blue-400 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <div className="text-xs text-white/60">Индустрия</div>
+                      <div className="text-sm font-medium truncate">{user.businessInfo.industry}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-white/80">
+                    <Calendar size={16} className="text-purple-400 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <div className="text-xs text-white/60">Основана</div>
+                      <div className="text-sm font-medium">{user.businessInfo.founded}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-white/80">
+                    <Users size={16} className="text-cyan-400 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <div className="text-xs text-white/60">Команда</div>
+                      <div className="text-sm font-medium truncate">{user.businessInfo.employees}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-white/80">
+                    <TrendingUp size={16} className="text-emerald-400 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <div className="text-xs text-white/60">Выручка</div>
+                      <div className="text-sm font-medium truncate">{user.businessInfo.revenue}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Описание */}
+                <p className="text-sm text-white/70 leading-relaxed">
+                  {user.businessInfo.description}
+                </p>
+                
+                {/* Контакты (если есть) */}
+                {(user.businessInfo.website || user.businessInfo.phone || user.businessInfo.email) && (
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
+                    {user.businessInfo.website && (
+                      <a 
+                        href={user.businessInfo.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs px-3 py-1.5 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10 text-blue-400 hover:bg-white/10 transition-colors"
+                      >
+                        🌐 Сайт
+                      </a>
+                    )}
+                    {user.businessInfo.phone && (
+                      <a 
+                        href={`tel:${user.businessInfo.phone}`}
+                        className="text-xs px-3 py-1.5 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 transition-colors"
+                      >
+                        📞 {user.businessInfo.phone}
+                      </a>
+                    )}
+                    {user.businessInfo.email && (
+                      <a 
+                        href={`mailto:${user.businessInfo.email}`}
+                        className="text-xs px-3 py-1.5 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 transition-colors"
+                      >
+                        ✉️ {user.businessInfo.email}
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
             </motion.div>
           )}
 

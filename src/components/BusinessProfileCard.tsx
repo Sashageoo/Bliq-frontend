@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Building2, Verified, Users, TrendingUp, Calendar, Globe, Mail, Phone, Shield, Crown } from 'lucide-react';
+import { Building2, Verified, Users, TrendingUp, Calendar, Globe, Mail, Phone, Shield } from 'lucide-react';
 
 interface BusinessInfo {
   companyName: string;
@@ -27,7 +27,6 @@ interface BusinessProfileCardProps {
   };
   isOwner?: boolean;
   onRequestVerification?: () => void;
-  onUpgradeToPremium?: () => void;
 }
 
 export function BusinessProfileCard({ 
@@ -152,16 +151,6 @@ export function BusinessProfileCard({
               Подать заявку на верификацию
             </Button>
           )}
-          
-          <Button 
-            onClick={onUpgradeToPremium}
-            variant="outline"
-            size="sm"
-            className="w-full border-orange-500/50 hover:bg-orange-500/10"
-          >
-            <Crown className="w-4 h-4 mr-2" />
-            Подключить Премиум (₽2,999/мес)
-          </Button>
         </div>
       )}
 

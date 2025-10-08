@@ -1,65 +1,50 @@
 import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card } from './ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { ArrowLeft, ArrowRight, Building2, Shield, Crown, CheckCircle, Upload } from 'lucide-react';
+import { motion } from 'motion/react';
+import { ArrowLeft, ArrowRight, Building2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface BusinessInfo {
   companyName: string;
   industry: string;
-  founded: string;
-  employees: string;
-  revenue: string;
   description: string;
-  website: string;
-  phone: string;
-  email: string;
+  selectedSuperpowers: string[];
 }
 
 interface OnboardingBusinessSetupScreenProps {
-  onNext: (businessInfo: BusinessInfo) => void;
+  onNext: (businessInfo: any) => void;
   onBack: () => void;
   onSkip: () => void;
 }
 
 const INDUSTRIES = [
-  'Технологии и IT',
-  'Финансы и банковские услуги',
-  'Здравоохранение',
-  'Образование',
-  'Розничная торговля',
-  'Производство',
-  'Строительство',
-  'Маркетинг и реклама',
-  'Консалтинг',
-  'Недвижимость',
-  'Туризм и гостеприимство',
-  'Медиа и развлечения',
-  'Транспорт и логистика',
-  'Энергетика',
-  'Сельское хозяйство',
-  'Другое'
+  { name: 'Технологии и IT', emoji: '💻' },
+  { name: 'Финансы', emoji: '💰' },
+  { name: 'Здравоохранение', emoji: '🏥' },
+  { name: 'Образование', emoji: '🎓' },
+  { name: 'Розничная торговля', emoji: '🛒' },
+  { name: 'Производство', emoji: '🏭' },
+  { name: 'Строительство', emoji: '🏗️' },
+  { name: 'Маркетинг и реклама', emoji: '📢' },
+  { name: 'Консалтинг', emoji: '💼' },
+  { name: 'Недвижимость', emoji: '🏠' },
+  { name: 'Медиа и развлечения', emoji: '🎬' },
+  { name: 'Другое', emoji: '🏢' }
 ];
 
-const EMPLOYEE_RANGES = [
-  '1-10 сотрудников',
-  '11-50 сотрудников',
-  '51-200 сотрудников',
-  '201-500 сотрудников',
-  '501-1000 сотрудников',
-  '1000+ сотрудников'
-];
-
-const REVENUE_RANGES = [
-  'До 1 млн ₽',
-  '1-10 млн ₽',
-  '10-100 млн ₽',
-  '100 млн - 1 млрд ₽',
-  'Свыше 1 млрд ₽',
-  'Не указывать'
+// Бизнес-суперсилы (интерпретация 7 категорий для бизнеса)
+const BUSINESS_SUPERPOWERS = [
+  { name: 'Инновации', emoji: '🧠', category: 'Mind' },
+  { name: 'Корпоративная культура', emoji: '💜', category: 'Soul' },
+  { name: 'Эффективность процессов', emoji: '🌊', category: 'Flow' },
+  { name: 'Команда и HR', emoji: '👥', category: 'Crew' },
+  { name: 'Финансовая мощь', emoji: '💪', category: 'Body' },
+  { name: 'Дизайн и UX', emoji: '🎨', category: 'Style' },
+  { name: 'Продажи и маркетинг', emoji: '⚡', category: 'Drive' },
+  { name: 'Клиентский сервис', emoji: '🤝', category: 'Soul' },
+  { name: 'Технологическое превосходство', emoji: '🚀', category: 'Mind' },
+  { name: 'Устойчивое развитие', emoji: '🌱', category: 'Soul' },
+  { name: 'Масштабирование', emoji: '📈', category: 'Drive' },
+  { name: 'Качество продукта', emoji: '⭐', category: 'Body' }
 ];
 
 export function OnboardingBusinessSetupScreen({
@@ -70,16 +55,9 @@ export function OnboardingBusinessSetupScreen({
   const [businessInfo, setBusinessInfo] = useState<BusinessInfo>({
     companyName: '',
     industry: '',
-    founded: '',
-    employees: '',
-    revenue: '',
     description: '',
-    website: '',
-    phone: '',
-    email: ''
+    selectedSuperpowers: []
   });
-
-  const [step, setStep] = useState<'basic' | 'details' | 'verification'>('basic');
 
   const handleInputChange = (field: keyof BusinessInfo, value: string) => {
     setBusinessInfo(prev => ({
@@ -88,341 +66,371 @@ export function OnboardingBusinessSetupScreen({
     }));
   };
 
-  const handleBasicNext = () => {
-    if (!businessInfo.companyName || !businessInfo.industry) {
-      toast.error('Заполни название компании и отрасль');
-      return;
-    }
-    setStep('details');
-  };
-
-  const handleDetailsNext = () => {
-    setStep('verification');
+  const toggleSuperpower = (superpowerName: string) => {
+    setBusinessInfo(prev => {
+      const current = prev.selectedSuperpowers;
+      // Если уже выбрано - убрать
+      if (current.includes(superpowerName)) {
+        return {
+          ...prev,
+          selectedSuperpowers: current.filter(name => name !== superpowerName)
+        };
+      }
+      // Если выбрано менее 3 - добавить
+      if (current.length < 3) {
+        return {
+          ...prev,
+          selectedSuperpowers: [...current, superpowerName]
+        };
+      }
+      // Если уже 3 - заменить последнее
+      return {
+        ...prev,
+        selectedSuperpowers: [...current.slice(0, 2), superpowerName]
+      };
+    });
   };
 
   const handleComplete = () => {
-    if (!businessInfo.email) {
-      toast.error('Укажи email для верификации');
+    if (!businessInfo.companyName) {
+      toast.error('Укажи название компании');
       return;
     }
-    onNext(businessInfo);
+    if (!businessInfo.industry) {
+      toast.error('Выбери отрасль');
+      return;
+    }
+    if (businessInfo.selectedSuperpowers.length !== 3) {
+      toast.error('Выбери 3 ключевые силы компании');
+      return;
+    }
+
+    // Передаем упрощенную бизнес-информацию
+    onNext({
+      companyName: businessInfo.companyName,
+      industry: businessInfo.industry,
+      description: businessInfo.description || `Компания в сфере: ${businessInfo.industry}`,
+      founded: new Date().getFullYear().toString(),
+      employees: '11-50 сотрудников',
+      revenue: 'Не указывать',
+      website: '',
+      phone: '',
+      email: ''
+    });
   };
 
-  const handleVerificationRequest = () => {
-    toast.success('Заявка на верификацию отправлена! Мы свяжемся с тобой в течение 2-3 рабочих дней.');
-  };
-
-  const handleDocumentUpload = () => {
-    toast.success('Документ загружен! Это ускорит процесс верификации.');
-  };
+  const canContinue = 
+    businessInfo.companyName.trim().length > 0 && 
+    businessInfo.industry.length > 0 &&
+    businessInfo.selectedSuperpowers.length === 3;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="p-4 flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={step === 'basic' ? onBack : () => setStep(step === 'details' ? 'basic' : 'details')}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onSkip}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Пропустить
-        </Button>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Энергетический фон */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bliq-energy-gradient opacity-10" />
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
+            initial={{ 
+              x: Math.random() * window.innerWidth,
+              y: window.innerHeight + 100,
+              scale: 0
+            }}
+            animate={{ 
+              y: -100,
+              scale: [0, 1, 0],
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 4
+            }}
+          />
+        ))}
       </div>
 
-      {/* Progress */}
-      <div className="px-4 mb-6">
-        <div className="flex items-center justify-center space-x-2">
-          <div className={`w-2 h-2 rounded-full transition-colors ${step === 'basic' ? 'bg-blue-400' : 'bg-blue-400'}`}></div>
-          <div className={`w-8 h-0.5 transition-colors ${step !== 'basic' ? 'bg-blue-400' : 'bg-muted'}`}></div>
-          <div className={`w-2 h-2 rounded-full transition-colors ${step === 'details' ? 'bg-blue-400' : step === 'verification' ? 'bg-blue-400' : 'bg-muted'}`}></div>
-          <div className={`w-8 h-0.5 transition-colors ${step === 'verification' ? 'bg-blue-400' : 'bg-muted'}`}></div>
-          <div className={`w-2 h-2 rounded-full transition-colors ${step === 'verification' ? 'bg-blue-400' : 'bg-muted'}`}></div>
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Хедер */}
+        <div className="flex items-center justify-between p-6">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onBack}
+            className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-white"
+          >
+            <ArrowLeft size={20} />
+          </motion.button>
+
+          <div className="text-center">
+            <h1 className="font-semibold text-white">Бизнес-профиль</h1>
+            <p className="text-sm text-blue-200">шаг 5 из 6</p>
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onSkip}
+            className="text-muted-foreground hover:text-white transition-colors"
+          >
+            Пропустить
+          </motion.button>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 px-4 pb-8">
-        <div className="max-w-md mx-auto w-full">
-          
-          {step === 'basic' && (
-            <>
-              {/* Basic Info */}
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Building2 className="w-8 h-8 text-blue-400" />
-                </div>
-                <h1 className="text-3xl font-bold mb-2">Расскажи о компании</h1>
-                <p className="text-muted-foreground">
-                  Основная информация поможет пользователям лучше понять твой бизнес
-                </p>
+        {/* Основной контент */}
+        <div className="flex-1 px-6 py-4 overflow-y-auto">
+          <div className="max-w-md mx-auto">
+            {/* Иконка компании */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", bounce: 0.4, delay: 0.2 }}
+              className="text-center mb-8"
+            >
+              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 flex items-center justify-center mx-auto">
+                <Building2 size={32} className="text-white" />
+              </div>
+              <p className="text-muted-foreground text-sm mt-2">Логотип (позже)</p>
+            </motion.div>
+
+            {/* Форма */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-6"
+            >
+              {/* Название компании */}
+              <div>
+                <label className="block text-white font-medium mb-2">Название компании</label>
+                <input
+                  type="text"
+                  value={businessInfo.companyName}
+                  onChange={(e) => handleInputChange('companyName', e.target.value)}
+                  placeholder="ООО «Моя компания»"
+                  className="w-full px-4 py-3 glass-card rounded-xl text-white placeholder-muted-foreground neon-border focus:border-primary focus:outline-none transition-colors"
+                />
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="companyName">Название компании *</Label>
-                  <Input
-                    id="companyName"
-                    placeholder="Например, Bliq Technologies"
-                    value={businessInfo.companyName}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                    className="mt-2"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="industry">Отрасль *</Label>
-                  <Select onValueChange={(value) => handleInputChange('industry', value)}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Выбери отрасль" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {INDUSTRIES.map((industry) => (
-                        <SelectItem key={industry} value={industry}>
-                          {industry}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Краткое описание</Label>
-                  <Input
-                    id="description"
-                    placeholder="Чем занимается ваша компания?"
-                    value={businessInfo.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    className="mt-2"
-                  />
-                </div>
-
-                <Button 
-                  onClick={handleBasicNext}
-                  className="w-full gradient-button"
-                  size="lg"
-                >
-                  Продолжить
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </>
-          )}
-
-          {step === 'details' && (
-            <>
-              {/* Detailed Info */}
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Building2 className="w-8 h-8 text-purple-400" />
-                </div>
-                <h1 className="text-3xl font-bold mb-2">Дополнительная информация</h1>
-                <p className="text-muted-foreground">
-                  Эти данные помогут пользователям лучше понять масштаб вашего бизнеса
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="founded">Год основания</Label>
-                    <Input
-                      id="founded"
-                      placeholder="2020"
-                      value={businessInfo.founded}
-                      onChange={(e) => handleInputChange('founded', e.target.value)}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="employees">Команда</Label>
-                    <Select onValueChange={(value) => handleInputChange('employees', value)}>
-                      <SelectTrigger className="mt-2">
-                        <SelectValue placeholder="Размер" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {EMPLOYEE_RANGES.map((range) => (
-                          <SelectItem key={range} value={range}>
-                            {range}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="revenue">Выручка (необязательно)</Label>
-                  <Select onValueChange={(value) => handleInputChange('revenue', value)}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Выбери диапазон" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {REVENUE_RANGES.map((range) => (
-                        <SelectItem key={range} value={range}>
-                          {range}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="website">Веб-сайт</Label>
-                  <Input
-                    id="website"
-                    placeholder="https://yourcompany.com"
-                    value={businessInfo.website}
-                    onChange={(e) => handleInputChange('website', e.target.value)}
-                    className="mt-2"
-                  />
-                </div>
-
-                <Button 
-                  onClick={handleDetailsNext}
-                  className="w-full energy-button"
-                  size="lg"
-                >
-                  Продолжить
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </>
-          )}
-
-          {step === 'verification' && (
-            <>
-              {/* Verification */}
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-green-400" />
-                </div>
-                <h1 className="text-3xl font-bold mb-2">Верификация компании</h1>
-                <p className="text-muted-foreground">
-                  Подтверди, что ты представляешь настоящую компанию
-                </p>
-              </div>
-
-              {/* Verification Options */}
-              <div className="space-y-4 mb-8">
-                <Card className="glass-card">
-                  <div className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="p-2 bg-green-500/20 rounded-lg">
-                        <CheckCircle className="w-6 h-6 text-green-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold mb-2">Бесплатная верификация</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Отправим запрос на верификацию. Рассмотрение 2-3 рабочих дня.
-                        </p>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={handleVerificationRequest}
-                          className="w-full"
-                        >
-                          Подать заявку
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="glass-card border-orange-500/30">
-                  <div className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="p-2 bg-orange-500/20 rounded-lg">
-                        <Crown className="w-6 h-6 text-orange-400" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-semibold">Премиум-верификация</h3>
-                          <div className="px-2 py-1 bg-orange-500/20 rounded-full">
-                            <span className="text-xs text-orange-300">₽2,999/мес</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Мгновенная верификация + расширенная аналитика + приоритетная поддержка
-                        </p>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="w-full border-orange-500/50 hover:bg-orange-500/10"
-                        >
-                          Подключить Премиум
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Contact Info */}
-              <div className="space-y-4 mb-8">
-                <div>
-                  <Label htmlFor="email">Email для связи *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="contact@yourcompany.com"
-                    value={businessInfo.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="mt-2"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Телефон компании</Label>
-                  <Input
-                    id="phone"
-                    placeholder="+7 (999) 123-45-67"
-                    value={businessInfo.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="mt-2"
-                  />
-                </div>
-              </div>
-
-              {/* Document Upload */}
-              <Card className="glass-card mb-8">
-                <div className="p-6">
-                  <div className="text-center">
-                    <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2">Документы компании (необязательно)</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Загрузи документы для ускорения верификации: ОГРН, устав, справку из банка
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleDocumentUpload}
+              {/* Отрасль */}
+              <div>
+                <label className="block text-white font-medium mb-2">Отрасль</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {INDUSTRIES.map((industry) => (
+                    <motion.button
+                      key={industry.name}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleInputChange('industry', industry.name)}
+                      className={`p-3 rounded-xl border transition-all duration-300 ${
+                        businessInfo.industry === industry.name
+                          ? 'bg-blue-500/30 border-blue-400 text-white'
+                          : 'bg-white/5 border-white/20 text-blue-200 hover:border-blue-400 hover:text-white'
+                      }`}
                     >
-                      Загрузить документы
-                    </Button>
-                  </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{industry.emoji}</span>
+                        <span className="text-sm font-medium">{industry.name}</span>
+                      </div>
+                    </motion.button>
+                  ))}
                 </div>
-              </Card>
+              </div>
 
-              <Button 
-                onClick={handleComplete}
-                className="w-full gradient-button"
-                size="lg"
+              {/* Краткое описание (опционально) */}
+              <div>
+                <label className="block text-white font-medium mb-2">
+                  О компании <span className="text-muted-foreground text-sm">(опционально)</span>
+                </label>
+                <textarea
+                  value={businessInfo.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Чем занимается ваша компания..."
+                  rows={3}
+                  className="w-full px-4 py-3 glass-card rounded-xl text-white placeholder-muted-foreground neon-border focus:border-primary focus:outline-none transition-colors resize-none"
+                />
+              </div>
+
+              {/* Выбор 3 ключевых сил */}
+              <div>
+                <label className="block text-white font-medium mb-2">
+                  Выбери 3 ключевые силы компании
+                </label>
+                <p className="text-blue-200 text-sm mb-4">
+                  Эти силы клиенты будут оценивать через отзывы ✨
+                </p>
+                
+                {/* Индикатор выбора */}
+                <div className="flex gap-2 mb-4">
+                  {[0, 1, 2].map((index) => (
+                    <div
+                      key={index}
+                      className={`flex-1 h-2 rounded-full transition-all duration-300 ${
+                        index < businessInfo.selectedSuperpowers.length
+                          ? 'bg-gradient-to-r from-blue-400 to-orange-400'
+                          : 'bg-white/10'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {BUSINESS_SUPERPOWERS.map((superpower) => {
+                    const isSelected = businessInfo.selectedSuperpowers.includes(superpower.name);
+                    const selectionIndex = businessInfo.selectedSuperpowers.indexOf(superpower.name);
+                    
+                    return (
+                      <motion.button
+                        key={superpower.name}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => toggleSuperpower(superpower.name)}
+                        className={`p-3 rounded-xl border transition-all duration-300 relative ${
+                          isSelected
+                            ? 'bg-blue-500/30 border-blue-400 text-white'
+                            : 'bg-white/5 border-white/20 text-blue-200 hover:border-blue-400 hover:text-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{superpower.emoji}</span>
+                          <span className="text-sm font-medium">{superpower.name}</span>
+                        </div>
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 flex items-center justify-center text-white shadow-lg"
+                          >
+                            <span className="text-xs font-bold">{selectionIndex + 1}</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {businessInfo.selectedSuperpowers.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-4 p-3 glass-card rounded-xl"
+                  >
+                    <p className="text-blue-200 text-sm mb-2">Ключевые силы компании:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {businessInfo.selectedSuperpowers.map((name, index) => {
+                        const sp = BUSINESS_SUPERPOWERS.find(s => s.name === name);
+                        return (
+                          <div
+                            key={name}
+                            className="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full flex items-center gap-2"
+                          >
+                            <span className="text-sm">{sp?.emoji}</span>
+                            <span className="text-sm text-white">{name}</span>
+                            <span className="text-xs text-blue-200">#{index + 1}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Навигация */}
+        <div className="p-6">
+          <motion.button
+            whileHover={canContinue ? { scale: 1.02, y: -2 } : {}}
+            whileTap={canContinue ? { scale: 0.98 } : {}}
+            onClick={canContinue ? handleComplete : undefined}
+            disabled={!canContinue}
+            className={`w-full px-8 py-4 font-semibold rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all duration-300 ${
+              canContinue
+                ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:shadow-2xl hover:shadow-blue-500/25'
+                : 'bg-white/10 text-blue-300 cursor-not-allowed'
+            }`}
+          >
+            {canContinue ? (
+              <>
+                <Sparkles size={20} />
+                Бизнес-профиль готов!
+                <ArrowRight size={20} />
+              </>
+            ) : (
+              <>
+                {!businessInfo.companyName ? 'Укажи название' : 
+                 !businessInfo.industry ? 'Выбери отрасль' :
+                 `Выбери ${3 - businessInfo.selectedSuperpowers.length} силы`}
+              </>
+            )}
+          </motion.button>
+        </div>
+
+        {/* Неоновые точки прогресса */}
+        <div className="pb-8">
+          <div className="flex justify-center gap-3 items-center mx-auto w-fit">
+            {/* Пройденные точки */}
+            {[...Array(4)].map((_, index) => (
+              <motion.div
+                key={index}
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                className="relative"
               >
-                Завершить настройку
-                <CheckCircle className="w-4 h-4 ml-2" />
-              </Button>
-            </>
-          )}
+                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-400/60 to-orange-400/60"></div>
+                <div className="absolute inset-0 w-2 h-2 rounded-full bg-gradient-to-r from-blue-400/40 to-orange-400/40 blur-[1px]"></div>
+              </motion.div>
+            ))}
+
+            {/* Активная точка с пульсацией */}
+            <motion.div
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [1, 0.8, 1]
+              }}
+              transition={{ 
+                duration: 2, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative"
+            >
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-orange-400"></div>
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.8, 1],
+                  opacity: [0.6, 0.2, 0.6]
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="absolute inset-0 w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 blur-sm"
+              />
+            </motion.div>
+
+            {/* Будущая точка */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0.3 }}
+              animate={{ 
+                scale: [0.8, 1, 0.8],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative"
+            >
+              <div className="w-2 h-2 rounded-full bg-white/20 border border-white/30"></div>
+              <div className="absolute inset-0 w-2 h-2 rounded-full bg-white/10 blur-[1px]"></div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

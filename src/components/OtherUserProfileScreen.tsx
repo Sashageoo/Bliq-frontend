@@ -343,148 +343,239 @@ export function OtherUserProfileScreen({
               className="flex items-center justify-center gap-6 mb-8"
             >
               <CompactMetricCard 
+                value={user.metrics.superpowers} 
+                label="Суперсилы" 
+                index={0}
+                onClick={onViewSuperpowersMap || (() => {})}
+              />
+              <CompactMetricCard 
                 value={user.metrics.bliks} 
                 label="Блики" 
-                index={0}
+                index={1}
                 onClick={scrollToBliks}
               />
               <CompactMetricCard 
                 value={user.metrics.friends} 
-                label="Друзья" 
-                index={1}
-                onClick={onViewFriends || (() => {})}
-              />
-              <CompactMetricCard 
-                value={user.metrics.superpowers} 
-                label="Суперсилы" 
+                label={user.profileType === 'business' ? "Клиенты" : "Друзья"} 
                 index={2}
-                onClick={onViewSuperpowersMap || (() => {})}
+                onClick={onViewFriends || (() => {})}
               />
             </motion.div>
 
-            {/* Топ суперсилы */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mb-8"
-            >
-              {/* Контейнер для центрирования сетки и выравнивания заголовка */}
-              <div className="max-w-sm mx-auto sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl">
-                {/* Заголовок с кнопкой раскрытия - выровнен по левому краю сетки */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-bold text-lg text-foreground">
-                    🔥 Топ суперсилы
-                  </h2>
-                  
-                  {/* Кнопка раскрытия (показывается только если есть больше суперсил, чем отображается изначально) */}
-                  {user.topSuperpowers.length > initialCount && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setIsTopSuperpowersExpanded(!isTopSuperpowersExpanded)}
-                      className="
-                        flex items-center gap-1
-                        text-sm transition-all duration-300
-                        backdrop-blur-xl glass-card
-                        rounded-full px-3 py-1.5
-                        text-muted-foreground hover:text-foreground
-                        hover:bg-accent
-                      "
-                    >
-                      <span>
-                        {isTopSuperpowersExpanded ? 'Свернуть' : `Показать все ${user.topSuperpowers.length}`}
-                      </span>
-                      {isTopSuperpowersExpanded ? (
-                        <ChevronUp size={14} />
-                      ) : (
-                        <ChevronDown size={14} />
-                      )}
-                    </motion.button>
-                  )}
-                </div>
-                
-                {/* Сетка суперсил с анимацией - адаптивная сетка по колонкам */}
-                <motion.div 
-                  layout
-                  className="grid gap-3 justify-items-center
-                    grid-cols-3 
-                    md:grid-cols-3
-                    lg:grid-cols-4
-                    xl:grid-cols-5
-                  "
+            {/* 🏢 БИЗНЕС-ПРОФИЛЬ: Компактная карта ценности */}
+            {user.profileType === 'business' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="mb-3"
+              >
+                <div 
+                  className="glass-card px-2.5 py-2 rounded-xl max-w-md mx-auto cursor-pointer hover:energy-glow transition-all duration-300"
+                  onClick={onViewSuperpowersMap}
                 >
-                  {displayedSuperpowers.map((superpower, index) => (
-                    <motion.div
-                      key={superpower.name}
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ 
-                        duration: 0.3, 
-                        delay: index * 0.05,
-                        layout: { duration: 0.3 }
-                      }}
-                    >
-                      <CompactSuperpowerCard
-                        name={superpower.name}
-                        emoji={superpower.emoji}
-                        value={superpower.value}
-                        energy={superpower.energy}
-                        trend={superpower.energy > 80 ? 'up' : superpower.energy < 40 ? 'down' : 'stable'}
-                        index={index}
-                        ownerName={user.name}
-                        ownerAvatar={user.avatar}
-                        isOwn={true}
-                        onClick={() => onSuperpowerClick?.(superpower.name)}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
-            </motion.div>
+                  {/* Горизонтальная раскладка: Круг слева, суперсилы справа */}
+                  <div className="flex flex-row gap-2.5 items-start">
+                    {/* Левая часть: Круглый индикатор */}
+                    <div className="flex flex-col items-center flex-shrink-0 pt-0.5">
+                      <div className="relative w-16 h-16 mb-0.5">
+                        {/* Внешнее кольцо */}
+                        <svg className="absolute inset-0 w-full h-full -rotate-90">
+                          <circle 
+                            cx="32" 
+                            cy="32" 
+                            r="28" 
+                            stroke="rgba(99, 102, 241, 0.2)" 
+                            strokeWidth="5" 
+                            fill="none" 
+                          />
+                          <circle 
+                            cx="32" 
+                            cy="32" 
+                            r="28" 
+                            stroke="url(#business-gradient)" 
+                            strokeWidth="5" 
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeDasharray={`${2 * Math.PI * 28}`}
+                            strokeDashoffset={`${2 * Math.PI * 28 * (1 - 94 / 100)}`}
+                            className="transition-all duration-1000"
+                          />
+                          <defs>
+                            <linearGradient id="business-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#a855f7" />
+                              <stop offset="50%" stopColor="#ec4899" />
+                              <stop offset="100%" stopColor="#8b5cf6" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        {/* Число в центре */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xl font-bold bg-gradient-to-br from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            94
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap leading-tight">Общий<br/>рейтинг</span>
+                    </div>
+
+                    {/* Правая часть: Топ-3 суперсилы */}
+                    <div className="flex-1 w-full space-y-0.5 pt-0.5">
+                      {user.topSuperpowers.slice(0, 3).map((sp, index) => (
+                        <div 
+                          key={sp.name}
+                          className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
+                          onClick={() => onSuperpowerClick?.(sp.name)}
+                        >
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            <span className="text-sm flex-shrink-0">{sp.emoji}</span>
+                            <span className="text-[11px] font-medium text-foreground truncate leading-tight">{sp.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <div className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-1000"
+                                style={{ width: `${sp.energy}%` }}
+                              />
+                            </div>
+                            <span className="text-[10px] font-bold text-emerald-400 w-5 text-right">{sp.energy}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 👤 ЛИЧНЫЙ ПРОФИЛЬ: Топ суперсилы (для бизнес-профилей не показываем - они в карте) */}
+            {user.profileType !== 'business' && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mb-8"
+              >
+                {/* Контейнер для центрирования сетки и выравнивания заголовка */}
+                <div className="max-w-sm mx-auto sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl">
+                  {/* Заголовок с кнопкой раскрытия - выровнен по левому краю сетки */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="font-bold text-lg text-foreground">
+                      🔥 Топ суперсилы
+                    </h2>
+                    
+                    {/* Кнопка раскрытия (показывается только если есть больше суперсил, чем отображается изначально) */}
+                    {user.topSuperpowers.length > initialCount && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setIsTopSuperpowersExpanded(!isTopSuperpowersExpanded)}
+                        className="
+                          flex items-center gap-1
+                          text-sm transition-all duration-300
+                          backdrop-blur-xl glass-card
+                          rounded-full px-3 py-1.5
+                          text-muted-foreground hover:text-foreground
+                          hover:bg-accent
+                        "
+                      >
+                        <span>
+                          {isTopSuperpowersExpanded ? 'Свернуть' : `Показать все ${user.topSuperpowers.length}`}
+                        </span>
+                        {isTopSuperpowersExpanded ? (
+                          <ChevronUp size={14} />
+                        ) : (
+                          <ChevronDown size={14} />
+                        )}
+                      </motion.button>
+                    )}
+                  </div>
+                  
+                  {/* Сетка суперсил с анимацией - адаптивная сетка по колонкам */}
+                  <motion.div 
+                    layout
+                    className="grid gap-3 justify-items-center
+                      grid-cols-3 
+                      md:grid-cols-3
+                      lg:grid-cols-4
+                      xl:grid-cols-5
+                    "
+                  >
+                    {displayedSuperpowers.map((superpower, index) => (
+                      <motion.div
+                        key={superpower.name}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ 
+                          duration: 0.3, 
+                          delay: index * 0.05,
+                          layout: { duration: 0.3 }
+                        }}
+                      >
+                        <CompactSuperpowerCard
+                          name={superpower.name}
+                          emoji={superpower.emoji}
+                          value={superpower.value}
+                          energy={superpower.energy}
+                          trend={superpower.energy > 80 ? 'up' : superpower.energy < 40 ? 'down' : 'stable'}
+                          index={index}
+                          ownerName={user.name}
+                          ownerAvatar={user.avatar}
+                          isOwn={true}
+                          onClick={() => onSuperpowerClick?.(superpower.name)}
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
             
-            {/* Элегантные 3D кнопки действий */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="flex justify-center gap-4 mb-8 flex-wrap"
-            >
-              <CircularActionButton
-                icon={<Camera size={20} />}
-                label="Бликнуть"
-                onClick={onCreateBlik || (() => {})}
-                variant="create"
-              />
-              <CircularActionButton
-                icon={<UserPlus size={20} />}
-                label="Добавить в друзья"
-                onClick={onAddFriend}
-                variant="friend"
-              />
-              <CircularActionButton
-                icon={<Bell size={20} />}
-                label="Подписаться"
-                onClick={onSubscribe}
-                variant="subscribe"
-              />
-              {onViewPersonalSite && (
+            {/* Элегантные 3D кнопки действи�� */}
+            {/* Элегантные 3D кнопки действий - только для личных профилей */}
+            {user.profileType !== 'business' && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="flex justify-center gap-4 mb-8 flex-wrap"
+              >
                 <CircularActionButton
-                  icon={<Globe size={20} />}
-                  label="Персональный сайт"
-                  onClick={onViewPersonalSite}
-                  variant="success"
+                  icon={<Camera size={20} />}
+                  label="Бликнуть"
+                  onClick={onCreateBlik || (() => {})}
+                  variant="create"
                 />
-              )}
-              <CircularActionButton
-                icon={<Share size={20} />}
-                label="Поделиться"
-                onClick={onShare}
-                variant="share"
-              />
-            </motion.div>
+                <CircularActionButton
+                  icon={<UserPlus size={20} />}
+                  label="Добавить в друзья"
+                  onClick={onAddFriend}
+                  variant="friend"
+                />
+                <CircularActionButton
+                  icon={<Bell size={20} />}
+                  label="Подписаться"
+                  onClick={onSubscribe}
+                  variant="subscribe"
+                />
+                {onViewPersonalSite && (
+                  <CircularActionButton
+                    icon={<Globe size={20} />}
+                    label="Персональный сайт"
+                    onClick={onViewPersonalSite}
+                    variant="success"
+                  />
+                )}
+                <CircularActionButton
+                  icon={<Share size={20} />}
+                  label="Поделиться"
+                  onClick={onShare}
+                  variant="share"
+                />
+              </motion.div>
+            )}
 
             {/* Полная секция бликов с табами */}
             {allUserBliks.length > 0 && (
@@ -494,57 +585,98 @@ export function OtherUserProfileScreen({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
                 className="mt-8 mb-8"
+                style={{ pointerEvents: 'auto' }}
               >
                 <div className="max-w-sm mx-auto sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl">
-                  {/* Заголовок и фильтры */}
-                  <h3 className="font-bold text-lg text-foreground mb-4">
-                    ✨ Блики
-                  </h3>
-                  
-                  {/* Табы для переключения типов бликов в едином стиле */}
-                  <div className="backdrop-blur-xl glass-card rounded-2xl p-1 mb-6">
-                    <div className="flex gap-1">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setActiveBliksTab('receives')}
-                        className={`
-                          flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300
-                          ${activeBliksTab === 'receives'
-                            ? 'backdrop-blur-xl bg-accent text-foreground shadow-lg'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                          }
-                        `}
-                      >
-                        <span>📩 {user.profileType === 'business' ? 'От клиентов' : 'От друзей'}</span>
-                        <span className="text-xs opacity-70">({receivedBliks.length})</span>
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setActiveBliksTab('gives')}
-                        className={`
-                          flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300
-                          ${activeBliksTab === 'gives'
-                            ? 'backdrop-blur-xl bg-accent text-foreground shadow-lg'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                          }
-                        `}
-                      >
-                        <span>📤 {user.profileType === 'business' ? 'Клиентам' : 'Друзьям'}</span>
-                        <span className="text-xs opacity-70">({sentBliks.length})</span>
-                      </motion.button>
+                  {/* 🎯 НАВИГАЦИЯ: 3 таба для бизнес-профилей (Блики, Блог, События), 2 для личных */}
+                  {user.profileType === 'business' ? (
+                    <div className="segmented-control rounded-2xl p-1 mb-6 max-w-lg mx-auto">
+                      <div className="grid grid-cols-3 gap-1 relative">
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setActiveBliksTab('receives')}
+                          className={`segmented-control-button px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${
+                            activeBliksTab === 'receives' ? 'active' : ''
+                          }`}
+                        >
+                          Блики
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setActiveBliksTab('blog')}
+                          className={`segmented-control-button px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${
+                            activeBliksTab === 'blog' ? 'active' : ''
+                          }`}
+                        >
+                          Блог
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setActiveBliksTab('events')}
+                          className={`segmented-control-button px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${
+                            activeBliksTab === 'events' ? 'active' : ''
+                          }`}
+                        >
+                          События
+                        </motion.button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      <h3 className="font-bold text-lg text-foreground mb-4">
+                        ✨ Блики
+                      </h3>
+                      <div className="backdrop-blur-xl glass-card rounded-2xl p-1 mb-6">
+                        <div className="flex gap-1">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setActiveBliksTab('receives')}
+                            className={`
+                              flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300
+                              ${activeBliksTab === 'receives'
+                                ? 'backdrop-blur-xl bg-accent text-foreground shadow-lg'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                              }
+                            `}
+                          >
+                            <span>📩 От друзей</span>
+                            <span className="text-xs opacity-70">({receivedBliks.length})</span>
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setActiveBliksTab('gives')}
+                            className={`
+                              flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-medium text-sm transition-all duration-300
+                              ${activeBliksTab === 'gives'
+                                ? 'backdrop-blur-xl bg-accent text-foreground shadow-lg'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                              }
+                            `}
+                          >
+                            <span>📤 Друзьям</span>
+                            <span className="text-xs opacity-70">({sentBliks.length})</span>
+                          </motion.button>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   {/* Адаптивная сетка бликов */}
                   {activeTabBliks.length > 0 ? (
-                    <div className={`
-                      ${windowWidth < 768 
-                        ? 'max-w-lg mx-auto space-y-4' // Мобильный: одна колонка как Instagram
-                        : 'bliks-grid' // Планшет и больше: сетка
-                      }
-                    `}>
+                    <div 
+                      className={`
+                        ${windowWidth < 768 
+                          ? 'max-w-lg mx-auto space-y-4' // Мобильный: одна колонка как Instagram
+                          : 'bliks-grid' // Планшет и больше: сетка
+                        }
+                      `}
+                      style={{ pointerEvents: 'auto' }}
+                    >
                       {activeTabBliks.map((blik, index) => (
                         <motion.div
                           key={`${activeBliksTab}-${blik.id}`}
@@ -554,6 +686,7 @@ export function OtherUserProfileScreen({
                             duration: 0.4, 
                             delay: index * 0.05 
                           }}
+                          style={{ pointerEvents: 'auto' }}
                         >
                           <BlikCard
                             blik={blik}

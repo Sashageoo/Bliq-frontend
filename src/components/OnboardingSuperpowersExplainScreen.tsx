@@ -323,33 +323,21 @@ export function OnboardingSuperpowersExplainScreen({ onNext, onBack, onSkip }: O
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-2xl font-semibold text-white mb-4"
+              className="font-semibold text-white mb-10"
             >
               Что такое суперсилы?
             </motion.h2>
 
-            {/* Описание */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="text-white/80 mb-8 leading-relaxed"
-            >
-              Суперсила - это твоя уникальность, качество, которое ценят твои друзья!
-            </motion.p>
-
-            {/* Ключевые особенности с неоновыми точками */}
+            {/* Ключевые особенности - ТОЛЬКО 2 САМЫХ ВАЖНЫХ */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="space-y-4 mb-8"
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="space-y-6 mb-12"
             >
               {[
-                { icon: Brain, text: 'У каждого есть уникальные таланты', color: 'from-indigo-400 to-purple-400' },
-                { icon: Heart, text: 'Растут от поддержки сообщества', color: 'from-pink-400 to-rose-400' },
-                { icon: Zap, text: 'Имеют энергию и влияние', color: 'from-yellow-400 to-orange-400' },
-                { icon: Target, text: 'Помогают выражать себя', color: 'from-emerald-400 to-teal-400' }
+                { icon: Brain, text: 'Твои уникальные качества', color: 'from-indigo-400 to-purple-400' },
+                { icon: Heart, text: 'Растут от бликов', color: 'from-pink-400 to-rose-400' }
               ].map((item, index) => {
                 const IconComponent = item.icon;
                 return (
@@ -364,7 +352,7 @@ export function OnboardingSuperpowersExplainScreen({ onNext, onBack, onSkip }: O
                       bounce: 0.4 
                     }}
                     whileHover={{ scale: 1.02, x: 5 }}
-                    className="flex items-center gap-4 text-left group cursor-pointer"
+                    className="flex items-center gap-5 text-left group cursor-pointer"
                   >
                     {/* Неоновая точка вместо карточки */}
                     <motion.div
@@ -438,7 +426,7 @@ export function OnboardingSuperpowersExplainScreen({ onNext, onBack, onSkip }: O
                     <motion.div
                       initial={{ opacity: 0.7 }}
                       whileHover={{ opacity: 1 }}
-                      className="text-white/90 text-sm group-hover:text-white transition-colors relative"
+                      className="text-white group-hover:text-white transition-colors relative"
                     >
                       {item.text}
                       
@@ -472,7 +460,7 @@ export function OnboardingSuperpowersExplainScreen({ onNext, onBack, onSkip }: O
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform skew-x-12"
               />
               
-              <span className="relative z-10">Понятно!</span>
+              <span className="relative z-10">Дальше</span>
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform relative z-10" />
             </motion.button>
           </motion.div>

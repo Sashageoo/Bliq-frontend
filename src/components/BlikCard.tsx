@@ -16,7 +16,7 @@ const LikedByAvatars = memo(function LikedByAvatars({
   const remainingCount = Math.max(0, totalLikes - displayedUsers.length);
   
   return (
-    <div className="flex items-center gap-2 max-w-full overflow-hidden">
+    <div className="flex items-center gap-2">
       {/* Аватары лайкнувших пользователей */}
       <div className="flex -space-x-1 shrink-0 relative">
         {displayedUsers.map((user, index) => (
@@ -167,8 +167,11 @@ interface BlikCardProps {
   onComment?: (id: string) => void;
   onShare?: (id: string) => void;
   onBlikDetail?: (id: string) => void;
+  onDetail?: (id: string) => void; // Alternative naming for TopScreen
   onUserProfile?: (userId: string) => void; // Add missing prop
   onSuperpowerClick?: (superpowerName: string) => void; // Добавлен новый пропс
+  showRank?: boolean; // Показывать ранг в топе
+  rank?: number; // Номер места в топе
 }
 
 export const BlikCard = memo(function BlikCard({ 
@@ -180,8 +183,11 @@ export const BlikCard = memo(function BlikCard({
   onComment,
   onShare,
   onBlikDetail,
+  onDetail,
   onUserProfile,
-  onSuperpowerClick
+  onSuperpowerClick,
+  showRank = false,
+  rank
 }: BlikCardProps) {
   // Use blik prop or fallback to data prop for backward compatibility
   const blikData = blik || data;
@@ -238,14 +244,15 @@ export const BlikCard = memo(function BlikCard({
     if (target.closest('button')) {
       return; // Не открываем детали если кликнули по кнопке
     }
-    onBlikDetail?.(safeBlikData.id);
+    // Поддержка обоих вариантов пропсов
+    (onBlikDetail || onDetail)?.(safeBlikData.id);
   };
 
   // Grid layout для больших экранов - компактный
   if (layout === 'grid') {
     return (
       <div 
-        className="w-full glass-card rounded-xl overflow-hidden shadow-xl transition-all duration-300 mb-6 cursor-pointer hover:bg-accent"
+        className="glass-card rounded-xl overflow-hidden shadow-xl transition-all duration-300 mb-6 cursor-pointer hover:bg-accent"
         onClick={handleCardClick}
       >
         {/* Компактный header */}
@@ -256,6 +263,7 @@ export const BlikCard = memo(function BlikCard({
                 image={safeBlikData.author.avatar}
                 isOnline={safeBlikData.author.isOnline}
                 size="small"
+                isBrandLogo={safeBlikData.author.avatar?.includes('f264197d0dfa11757e4a661e9aace4fad7102f83')}
                 onClick={() => onUserProfile?.(safeBlikData.author.name)}
               />
               <div className="min-w-0 flex-1">
@@ -383,17 +391,25 @@ export const BlikCard = memo(function BlikCard({
   // Instagram-стиль карточка (feed layout)
   return (
     <div 
-      className={`w-full max-w-full glass-card rounded-xl overflow-hidden shadow-xl transition-all duration-300 cursor-pointer hover:bg-accent ${index === 0 ? 'mt-2 mb-6' : 'mb-6 last:mb-8'}`}
+      className={`glass-card rounded-xl overflow-hidden shadow-xl transition-all duration-300 cursor-pointer hover:bg-accent ${index === 0 ? 'mt-2 mb-6' : 'mb-6 last:mb-8'} relative`}
       onClick={handleCardClick}
     >
+      {/* Ранк бейдж для топов */}
+      {showRank && rank && (
+        <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm energy-glow shadow-lg">
+          {rank}
+        </div>
+      )}
+      
       {/* Header - как в Instagram */}
       <div className="px-4 py-3">
-        <div className="flex items-center justify-between max-w-full overflow-hidden">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <ProfileAvatar 
               image={safeBlikData.author.avatar}
               isOnline={safeBlikData.author.isOnline}
               size="small"
+              isBrandLogo={safeBlikData.author.avatar?.includes('f264197d0dfa11757e4a661e9aace4fad7102f83')}
               onClick={() => onUserProfile?.(safeBlikData.author.name)}
             />
             <div className="min-w-0 flex-1">
@@ -474,7 +490,7 @@ export const BlikCard = memo(function BlikCard({
       {/* Footer с действиями и описанием */}
       <div className="px-4 py-3">
         {/* Действия (лайк, комментарий, поделиться) */}
-        <div className="flex items-center gap-4 mb-3 max-w-full overflow-hidden">
+        <div className="flex items-center gap-4 mb-3">
           <button
             onClick={(e) => {
               e.stopPropagation();

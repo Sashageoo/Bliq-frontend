@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ArrowLeft, Camera, User, Mail, Save, RefreshCw, X, Upload, Folder, Phone, Globe, Link, Shield, Eye, Heart, MapPin, Calendar, Briefcase, Star, Instagram, Twitter, Github, Linkedin, Plus } from 'lucide-react';
+import { ArrowLeft, Camera, User, Mail, Save, RefreshCw, X, Upload, Folder, Phone, Globe, Link, Shield, Eye, Heart, MapPin, Calendar, Briefcase, Star, Instagram, Twitter, Github, Linkedin, Plus, Crown, Check, Facebook, Youtube, Video, MessageCircle, Send } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { StatusBar } from './StatusBar';
 import { Button } from './ui/button';
@@ -19,6 +19,22 @@ interface User {
   backgroundImage: string;
   avatarImage: string;
   isOnline: boolean;
+  profileType?: 'personal' | 'business';
+  businessInfo?: {
+    companyName: string;
+    industry: string;
+    founded: string;
+    employees: string;
+    revenue: string;
+    description: string;
+    website?: string;
+    phone?: string;
+    email?: string;
+    verified: boolean;
+    verificationDate?: string;
+    verificationDocuments?: any[];
+    brandHeader?: string; // Брендированная шапка для бизнес-профилей
+  };
   email?: string;
   phone?: string;
   bio?: string;
@@ -86,12 +102,13 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
       showOnlineStatus: user.privacy?.showOnlineStatus ?? true,
     },
     avatarImage: user.avatarImage,
-    backgroundImage: user.backgroundImage
+    backgroundImage: user.backgroundImage,
+    brandHeader: user.businessInfo?.brandHeader || ''
   });
 
   const [activeTab, setActiveTab] = useState('general');
   const [isLoading, setIsLoading] = useState(false);
-  const [showImagePicker, setShowImagePicker] = useState<'avatar' | 'background' | null>(null);
+  const [showImagePicker, setShowImagePicker] = useState<'avatar' | 'background' | 'brandHeader' | null>(null);
   const [availableImages, setAvailableImages] = useState<string[]>([]);
   const [loadingImages, setLoadingImages] = useState(false);
   const [customImageUrl, setCustomImageUrl] = useState('');
@@ -101,10 +118,38 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
   const [newLinkName, setNewLinkName] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
   
+  // Активные социальные ссылки (и предустановленные, и кастомные)
+  const [activeSocialLinks, setActiveSocialLinks] = useState<{ platform: string; icon: any; url: string; placeholder: string; isCustom: boolean }[]>(() => {
+    const links = [];
+    // Добавляем только Instagram из существующих ссылок (если есть)
+    if (user.socialLinks?.instagram) {
+      links.push({ platform: 'Instagram', icon: Instagram, url: user.socialLinks.instagram, placeholder: '@username', isCustom: false });
+    }
+    // Остальные соцсети пользователь добавит сам по желанию
+    return links;
+  });
+  
   // Refs для файловых input'ов
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const backgroundFileInputRef = useRef<HTMLInputElement>(null);
   const modalFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Доступные популярные соцсети для быстрого добавления
+  const availableSocialPlatforms = [
+    { platform: 'Instagram', icon: Instagram, placeholder: '@username', color: 'from-purple-500 to-pink-500' },
+    { platform: 'X', icon: Twitter, placeholder: '@username', color: 'from-gray-800 to-black' },
+    { platform: 'Tweech', icon: Linkedin, placeholder: 'https://tweech.com/username', color: 'from-blue-500 to-cyan-500' },
+    { platform: 'GitHub', icon: Github, placeholder: 'https://github.com/username', color: 'from-gray-700 to-gray-900' },
+    { platform: 'Facebook', icon: Facebook, placeholder: 'https://facebook.com/username', color: 'from-blue-500 to-blue-700' },
+    { platform: 'YouTube', icon: Youtube, placeholder: 'https://youtube.com/@channel', color: 'from-red-500 to-red-700' },
+    { platform: 'TikTok', icon: Video, placeholder: '@username', color: 'from-black to-gray-800' },
+    { platform: 'Telegram', icon: Send, placeholder: '@username', color: 'from-blue-400 to-blue-500' },
+    { platform: 'Max', icon: Send, placeholder: '@username', color: 'from-blue-500 to-purple-500' },
+    { platform: 'WhatsApp', icon: MessageCircle, placeholder: '+7 (999) 123-45-67', color: 'from-green-500 to-green-600' },
+    { platform: 'Discord', icon: MessageCircle, placeholder: 'username#1234', color: 'from-indigo-500 to-purple-600' },
+    { platform: 'Pinterest', icon: Link, placeholder: 'https://pinterest.com/username', color: 'from-red-600 to-red-700' },
+    { platform: 'Likee', icon: Video, placeholder: '@username', color: 'from-pink-500 to-rose-500' },
+  ];
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -168,6 +213,28 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
     setCustomLinks(prev => prev.filter(link => link.name !== linkName));
     toast.success('Ссылка удалена!');
   };
+  
+  // Добавление социальной платформы
+  const handleAddSocialPlatform = (platform: string, icon: any, placeholder: string) => {
+    const exists = activeSocialLinks.some(link => link.platform === platform);
+    if (!exists) {
+      setActiveSocialLinks(prev => [...prev, { platform, icon, url: '', placeholder, isCustom: false }]);
+      toast.success(`${platform} добавлен! 📱`);
+    }
+  };
+  
+  // Обновление ссылки социальной платформы
+  const handleUpdateSocialLink = (platform: string, url: string) => {
+    setActiveSocialLinks(prev => prev.map(link => 
+      link.platform === platform ? { ...link, url } : link
+    ));
+  };
+  
+  // Удаление социальной ссылки
+  const handleRemoveSocialLink = (platform: string) => {
+    setActiveSocialLinks(prev => prev.filter(link => link.platform !== platform));
+    toast.success(`${platform} удален!`);
+  };
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -175,9 +242,26 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
     // Имитация сохранения
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Преобразуем activeSocialLinks обратно в формат socialLinks
+    const updatedSocialLinks: Record<string, string> = {};
+    activeSocialLinks.forEach(link => {
+      const platform = link.platform.toLowerCase();
+      if (link.url.trim()) {
+        updatedSocialLinks[platform] = link.url.trim();
+      }
+    });
+    
     const updatedUser = {
       ...formData,
-      customLinks // Сохраняем кастомные ссылки
+      socialLinks: updatedSocialLinks, // Сохраняем социальные ссылки
+      customLinks, // Сохраняем кастомные ссылки
+      // Обновляем businessInfo с brandHeader если это бизнес-профиль
+      ...(user.profileType === 'business' && user.businessInfo ? {
+        businessInfo: {
+          ...user.businessInfo,
+          brandHeader: formData.brandHeader
+        }
+      } : {})
     };
     
     onSave(updatedUser);
@@ -185,7 +269,7 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
     toast.success('Профиль успешно обновлен! ✨');
   };
 
-  const handlePhotoUpload = async (type: 'avatar' | 'background') => {
+  const handlePhotoUpload = async (type: 'avatar' | 'background' | 'brandHeader') => {
     setShowImagePicker(type);
     setLoadingImages(true);
     
@@ -193,6 +277,8 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
       // Получаем свежие изображения из Unsplash для каждого типа
       const searchQueries = type === 'avatar' 
         ? ['professional portrait woman', 'creative portrait', 'business headshot', 'professional man', 'artistic portrait', 'modern portrait']
+        : type === 'brandHeader'
+        ? ['bakery interior warm', 'restaurant interior modern', 'coffee shop atmosphere', 'artisan bakery products', 'pastry shop display', 'business storefront']
         : ['cosmic nebula space', 'aurora borealis night', 'cyberpunk neon cityscape', 'abstract gradient purple', 'mountain landscape sunset', 'coral reef underwater'];
 
       const images: string[] = [];
@@ -223,6 +309,15 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
               'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
               'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=face'
             ]
+          : type === 'brandHeader'
+          ? [
+              'https://images.unsplash.com/photo-1666019077186-2497e35531d4?w=1200&h=400&fit=crop', // Пекарня интерьер
+              'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&h=400&fit=crop', // Свежий хлеб
+              'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?w=1200&h=400&fit=crop', // Процесс выпечки
+              'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=1200&h=400&fit=crop', // Витрина с выпечкой
+              'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=400&fit=crop', // Пекарь за работой
+              'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&h=400&fit=crop'  // Артизанский хлеб
+            ]
           : [
               // Новые энергетические фоны для суперсил!
               'https://images.unsplash.com/photo-1602981256888-244edc1f444f?w=800&h=600&fit=crop', // Космическая туманность
@@ -248,6 +343,15 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
             'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
             'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=face'
           ]
+        : type === 'brandHeader'
+        ? [
+            'https://images.unsplash.com/photo-1666019077186-2497e35531d4?w=1200&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?w=1200&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=1200&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&h=400&fit=crop'
+          ]
         : [
             // Новые энергетические фоны для суперсил!
             'https://images.unsplash.com/photo-1602981256888-244edc1f444f?w=800&h=600&fit=crop', // Космическая туманность
@@ -268,6 +372,8 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
       setFormData(prev => ({ ...prev, avatarImage: imageUrl }));
     } else if (showImagePicker === 'background') {
       setFormData(prev => ({ ...prev, backgroundImage: imageUrl }));
+    } else if (showImagePicker === 'brandHeader') {
+      setFormData(prev => ({ ...prev, brandHeader: imageUrl }));
     }
     
     setShowImagePicker(null);
@@ -297,7 +403,7 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
     handleImageSelect(customImageUrl);
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type?: 'avatar' | 'background') => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type?: 'avatar' | 'background' | 'brandHeader') => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -330,6 +436,8 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
             setFormData(prev => ({ ...prev, avatarImage: base64String }));
           } else if (type === 'background') {
             setFormData(prev => ({ ...prev, backgroundImage: base64String }));
+          } else if (type === 'brandHeader') {
+            setFormData(prev => ({ ...prev, brandHeader: base64String }));
           }
           
           toast.success('Файл успешно загружен! ✨');
@@ -457,6 +565,101 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
                 </motion.button>
               </div>
             </div>
+
+            {/* 🎯 БРЕНДИРОВАННАЯ ШАПКА (только для бизнес-профилей) */}
+            {user.profileType === 'business' && (
+              <div className="space-y-4 pt-6 border-t border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Camera size={20} className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">Брендированная шапка</h3>
+                    <p className="text-sm text-white/60">Главное изображение твоего профиля</p>
+                  </div>
+                </div>
+                
+                {/* Превью текущей шапки */}
+                {formData.brandHeader && (
+                  <div className="relative w-full h-32 sm:h-40 md:h-48 rounded-xl overflow-hidden border border-white/20">
+                    <img
+                      src={formData.brandHeader}
+                      alt="Brand header"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 px-3 py-1 rounded-lg backdrop-blur-xl bg-black/40 border border-white/20">
+                      <span className="text-xs text-white/90">Текущая шапка</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Кнопки управления */}
+                <div className="flex flex-wrap gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handlePhotoUpload('brandHeader')}
+                    className="
+                      backdrop-blur-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20
+                      border border-purple-500/30
+                      rounded-xl px-4 py-3
+                      flex items-center gap-2
+                      text-white/90 font-medium
+                      hover:from-purple-500/30 hover:to-pink-500/30 hover:border-purple-500/50
+                      transition-all duration-300
+                    "
+                  >
+                    <Camera size={16} />
+                    Выбрать из галереи
+                  </motion.button>
+                  
+                  {/* Скрытый input для загрузки файла шапки */}
+                  <input
+                    ref={backgroundFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, 'brandHeader')}
+                    className="hidden"
+                    disabled={uploadingFile}
+                  />
+                  
+                  <motion.button
+                    whileHover={{ scale: uploadingFile ? 1 : 1.05 }}
+                    whileTap={{ scale: uploadingFile ? 1 : 0.95 }}
+                    onClick={() => backgroundFileInputRef.current?.click()}
+                    disabled={uploadingFile}
+                    className={`
+                      backdrop-blur-xl bg-white/10 
+                      border border-white/20
+                      rounded-xl px-4 py-3
+                      flex items-center gap-2
+                      text-white/90 font-medium
+                      transition-all duration-300
+                      ${uploadingFile 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'hover:bg-white/15 hover:border-white/30 cursor-pointer'
+                      }
+                    `}
+                  >
+                    {uploadingFile ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Загружаем...
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={16} />
+                        Загрузить файл
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+                
+                <p className="text-sm text-white/50">
+                  Рекомендуемые размеры: 1200x400px. Форматы: JPG, PNG, WebP
+                </p>
+              </div>
+            )}
 
             {/* Основная информация */}
             <div className="space-y-5">
@@ -670,197 +873,203 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
       case 'social':
         return (
           <div className="space-y-6">
-            <div className="space-y-5">
-              {/* Instagram */}
-              <div className="space-y-2">
-                <Label className="text-white/90 flex items-center gap-2">
-                  <Instagram size={16} />
-                  Instagram
-                </Label>
-                <Input
-                  value={formData.socialLinks.instagram}
-                  onChange={(e) => handleNestedInputChange('socialLinks', 'instagram', e.target.value)}
-                  className="
-                    backdrop-blur-xl bg-white/10 
-                    border border-white/20
-                    text-white placeholder-white/50
-                    focus:border-white/40 focus:bg-white/15
-                    rounded-xl h-12
-                  "
-                  placeholder="@username или https://instagram.com/username"
-                />
-              </div>
-
-              {/* Twitter */}
-              <div className="space-y-2">
-                <Label className="text-white/90 flex items-center gap-2">
-                  <Twitter size={16} />
-                  Twitter (X)
-                </Label>
-                <Input
-                  value={formData.socialLinks.twitter}
-                  onChange={(e) => handleNestedInputChange('socialLinks', 'twitter', e.target.value)}
-                  className="
-                    backdrop-blur-xl bg-white/10 
-                    border border-white/20
-                    text-white placeholder-white/50
-                    focus:border-white/40 focus:bg-white/15
-                    rounded-xl h-12
-                  "
-                  placeholder="@username или https://twitter.com/username"
-                />
-              </div>
-
-              {/* LinkedIn */}
-              <div className="space-y-2">
-                <Label className="text-white/90 flex items-center gap-2">
-                  <Linkedin size={16} />
-                  LinkedIn
-                </Label>
-                <Input
-                  value={formData.socialLinks.linkedin}
-                  onChange={(e) => handleNestedInputChange('socialLinks', 'linkedin', e.target.value)}
-                  className="
-                    backdrop-blur-xl bg-white/10 
-                    border border-white/20
-                    text-white placeholder-white/50
-                    focus:border-white/40 focus:bg-white/15
-                    rounded-xl h-12
-                  "
-                  placeholder="https://linkedin.com/in/username"
-                />
-              </div>
-
-              {/* GitHub */}
-              <div className="space-y-2">
-                <Label className="text-white/90 flex items-center gap-2">
-                  <Github size={16} />
-                  GitHub
-                </Label>
-                <Input
-                  value={formData.socialLinks.github}
-                  onChange={(e) => handleNestedInputChange('socialLinks', 'github', e.target.value)}
-                  className="
-                    backdrop-blur-xl bg-white/10 
-                    border border-white/20
-                    text-white placeholder-white/50
-                    focus:border-white/40 focus:bg-white/15
-                    rounded-xl h-12
-                  "
-                  placeholder="https://github.com/username"
-                />
-              </div>
-
-              {/* Разделитель */}
-              <div className="flex items-center gap-4 py-4">
-                <div className="flex-1 h-px bg-white/20"></div>
-                <span className="text-white/60 text-sm">Кастомные ссылки</span>
-                <div className="flex-1 h-px bg-white/20"></div>
-              </div>
-
-              {/* Добавление кастомной ссылки */}
+            {/* Популярные соцсети для быстрого добавления */}
+            {availableSocialPlatforms.filter(platform => 
+              !activeSocialLinks.some(link => link.platform === platform.platform)
+            ).length > 0 && (
               <div className="space-y-3">
-                <Label className="text-white/90 flex items-center gap-2">
-                  <Plus size={16} />
-                  Добавить свою ссылку
-                </Label>
+                <Label className="text-white/90">Добавить соцсети</Label>
+                <div className="flex flex-wrap gap-2">
+                  {availableSocialPlatforms
+                    .filter(platform => !activeSocialLinks.some(link => link.platform === platform.platform))
+                    .map((platform) => (
+                      <motion.button
+                        key={platform.platform}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAddSocialPlatform(platform.platform, platform.icon, platform.placeholder)}
+                        className="
+                          px-4 py-2.5 rounded-xl
+                          backdrop-blur-xl bg-white/10 
+                          border border-white/20
+                          hover:border-white/40 hover:bg-white/15
+                          flex items-center gap-2
+                          text-white/90 font-medium
+                          transition-all duration-300
+                        "
+                      >
+                        <platform.icon size={18} />
+                        <span className="text-sm">{platform.platform}</span>
+                      </motion.button>
+                    ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Активные социальные ссылки */}
+            {activeSocialLinks.length > 0 && (
+              <div className="space-y-4">
+                {activeSocialLinks.map((link, index) => {
+                  const Icon = link.icon;
+                  return (
+                    <motion.div
+                      key={link.platform}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-2"
+                    >
+                      <Label className="text-white/90 flex items-center gap-2">
+                        <Icon size={16} />
+                        {link.platform}
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={link.url}
+                          onChange={(e) => handleUpdateSocialLink(link.platform, e.target.value)}
+                          className="
+                            flex-1
+                            backdrop-blur-xl bg-white/10 
+                            border border-white/20
+                            text-white placeholder-white/50
+                            focus:border-white/40 focus:bg-white/15
+                            rounded-xl h-12
+                          "
+                          placeholder={link.placeholder}
+                        />
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleRemoveSocialLink(link.platform)}
+                          className="
+                            w-12 h-12
+                            flex items-center justify-center
+                            text-red-400 hover:text-red-300
+                            hover:bg-red-500/20
+                            backdrop-blur-xl bg-white/5
+                            border border-white/10
+                            rounded-xl
+                            transition-all duration-200
+                          "
+                        >
+                          <X size={18} />
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Разделитель */}
+            <div className="flex items-center gap-4 py-4">
+              <div className="flex-1 h-px bg-white/20"></div>
+              <span className="text-white/60 text-sm">Кастомные ссылки</span>
+              <div className="flex-1 h-px bg-white/20"></div>
+            </div>
+
+            {/* Добавление кастомной ссылки */}
+            <div className="space-y-3">
+              <Label className="text-white/90 flex items-center gap-2">
+                <Plus size={16} />
+                Добавить свою ссылку
+              </Label>
+              
+              <div className="grid grid-cols-1 gap-3">
+                <Input
+                  value={newLinkName}
+                  onChange={(e) => setNewLinkName(e.target.value)}
+                  className="
+                    backdrop-blur-xl bg-white/10 
+                    border border-white/20
+                    text-white placeholder-white/50
+                    focus:border-white/40 focus:bg-white/15
+                    rounded-xl h-12
+                  "
+                  placeholder="Название ссылки (например: Портфолио, YouTube)"
+                />
                 
-                <div className="grid grid-cols-1 gap-3">
+                <div className="flex gap-2">
                   <Input
-                    value={newLinkName}
-                    onChange={(e) => setNewLinkName(e.target.value)}
+                    value={newLinkUrl}
+                    onChange={(e) => setNewLinkUrl(e.target.value)}
                     className="
+                      flex-1
                       backdrop-blur-xl bg-white/10 
                       border border-white/20
                       text-white placeholder-white/50
                       focus:border-white/40 focus:bg-white/15
                       rounded-xl h-12
                     "
-                    placeholder="Название ссылки (например: Портфолио, YouTube)"
+                    placeholder="https://example.com"
                   />
                   
-                  <div className="flex gap-2">
-                    <Input
-                      value={newLinkUrl}
-                      onChange={(e) => setNewLinkUrl(e.target.value)}
-                      className="
-                        flex-1
-                        backdrop-blur-xl bg-white/10 
-                        border border-white/20
-                        text-white placeholder-white/50
-                        focus:border-white/40 focus:bg-white/15
-                        rounded-xl h-12
-                      "
-                      placeholder="https://example.com"
-                    />
-                    
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={handleAddCustomLink}
-                      className="
-                        px-4 h-12
-                        backdrop-blur-xl bg-blue-500/20 
-                        border border-blue-400/30
-                        rounded-xl
-                        flex items-center justify-center
-                        text-blue-300 
-                        hover:bg-blue-500/30 hover:border-blue-400/50
-                        transition-all duration-300
-                      "
-                    >
-                      <Plus size={16} />
-                    </motion.button>
-                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAddCustomLink}
+                    className="
+                      px-4 h-12
+                      backdrop-blur-xl bg-blue-500/20 
+                      border border-blue-400/30
+                      rounded-xl
+                      flex items-center justify-center
+                      text-blue-300 
+                      hover:bg-blue-500/30 hover:border-blue-400/50
+                      transition-all duration-300
+                    "
+                  >
+                    <Plus size={16} />
+                  </motion.button>
                 </div>
               </div>
+            </div>
 
-              {/* Список кастомных ссылок */}
-              {customLinks.length > 0 && (
-                <div className="space-y-3">
-                  <Label className="text-white/90 text-sm">Ваши ссылки:</Label>
-                  {customLinks.map((link, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+            {/* Список кастомных ссылок */}
+            {customLinks.length > 0 && (
+              <div className="space-y-3">
+                <Label className="text-white/90 text-sm">Ваши ссылки:</Label>
+                {customLinks.map((link, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="
+                      backdrop-blur-xl bg-white/5 
+                      border border-white/10
+                      rounded-xl p-3
+                      flex items-center justify-between
+                    "
+                  >
+                    <div className="flex-1">
+                      <div className="text-white/90 font-medium text-sm">
+                        {link.name}
+                      </div>
+                      <div className="text-white/60 text-xs truncate">
+                        {link.url}
+                      </div>
+                    </div>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleRemoveCustomLink(link.name)}
                       className="
-                        backdrop-blur-xl bg-white/5 
-                        border border-white/10
-                        rounded-xl p-3
-                        flex items-center justify-between
+                        w-8 h-8
+                        flex items-center justify-center
+                        text-red-400 hover:text-red-300
+                        hover:bg-red-500/20
+                        rounded-lg
+                        transition-all duration-200
                       "
                     >
-                      <div className="flex-1">
-                        <div className="text-white/90 font-medium text-sm">
-                          {link.name}
-                        </div>
-                        <div className="text-white/60 text-xs truncate">
-                          {link.url}
-                        </div>
-                      </div>
-                      
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => handleRemoveCustomLink(link.name)}
-                        className="
-                          w-8 h-8
-                          flex items-center justify-center
-                          text-red-400 hover:text-red-300
-                          hover:bg-red-500/20
-                          rounded-lg
-                          transition-all duration-200
-                        "
-                      >
-                        <X size={14} />
-                      </motion.button>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
+                      <X size={14} />
+                    </motion.button>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -1137,6 +1346,158 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
           </div>
         );
 
+      case 'subscription':
+        return (
+          <div className="space-y-6">
+            {/* Заголовок секции */}
+            <div className="text-center space-y-2">
+              <h2 className="text-white text-2xl font-bold flex items-center justify-center gap-2">
+                <Crown className="w-6 h-6 text-yellow-400" />
+                Премиум подписка
+              </h2>
+              <p className="text-white/60 text-sm">
+                Разблокируй все возможности Bliq
+              </p>
+            </div>
+
+            {/* Карточка подписки */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="
+                backdrop-blur-xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-500/20
+                border-2 border-purple-400/40
+                rounded-2xl p-6
+                relative overflow-hidden
+              "
+            >
+              {/* Анимированный фон */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-pink-600/10 to-orange-600/10 animate-pulse" />
+              
+              <div className="relative z-10 space-y-6">
+                {/* Название плана */}
+                <div className="text-center space-y-2">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-400/20 border border-yellow-400/30">
+                    <Crown className="w-4 h-4 text-yellow-400" />
+                    <span className="text-yellow-300 font-semibold text-sm">BLIQ PREMIUM</span>
+                  </div>
+                  <div className="text-white text-3xl font-bold">
+                    ₽2,999
+                    <span className="text-white/60 text-lg font-normal">/месяц</span>
+                  </div>
+                </div>
+
+                {/* Преимущества */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">Безлимитные суперсилы</div>
+                      <div className="text-white/60 text-sm">Создавай сколько угодно персональных суперсил</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">Расширенная аналитика</div>
+                      <div className="text-white/60 text-sm">Подробная статистика по всем суперсилам и бликам</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">Приоритетная поддержка</div>
+                      <div className="text-white/60 text-sm">Первоочередная помощь от команды Bliq</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">Эксклюзивные функции</div>
+                      <div className="text-white/60 text-sm">Ранний доступ к новым фичам и возможностям</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">Без рекламы</div>
+                      <div className="text-white/60 text-sm">Чистый опыт использования приложения</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Кнопка подключения */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    toast.success('Функция подключения премиум скоро будет доступна! 👑');
+                  }}
+                  className="
+                    w-full
+                    business-primary-button
+                    px-6 py-4
+                    rounded-xl
+                    flex items-center justify-center gap-3
+                    text-white font-semibold text-lg
+                  "
+                >
+                  <Crown className="w-5 h-5" />
+                  Подключить Премиум
+                </motion.button>
+
+                {/* Дополнительная информация */}
+                <div className="text-center text-white/50 text-xs">
+                  Подписка автоматически продлевается каждый месяц. Отменить можно в любое время.
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Информация о текущей подписке (для тех, у кого уже есть премиум) */}
+            {/* 
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-white/90 font-medium">Текущая подписка</div>
+                <div className="px-3 py-1 rounded-full bg-green-500/20 border border-green-400/30 text-green-300 text-xs font-semibold">
+                  Активна
+                </div>
+              </div>
+              <div className="text-white/60 text-sm">
+                Следующее списание: 15 февраля 2025
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="
+                  w-full
+                  backdrop-blur-xl bg-white/5 
+                  border border-white/20
+                  rounded-xl px-4 py-3
+                  text-white/80 text-sm
+                  hover:bg-white/10 hover:border-white/30
+                  transition-all duration-300
+                "
+              >
+                Управление подпиской
+              </motion.button>
+            </div>
+            */}
+          </div>
+        );
+
       default:
         return null;
     }
@@ -1202,7 +1563,7 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             {/* Табы */}
             <TabsList className="
-              grid grid-cols-6 
+              grid grid-cols-7 
               backdrop-blur-xl bg-white/10 
               border border-white/20 
               rounded-2xl p-1 mb-6
@@ -1346,6 +1707,29 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
                   Оформление
                 </div>
               </TabsTrigger>
+              <TabsTrigger 
+                value="subscription" 
+                className="
+                  data-[state=active]:bg-white/20 
+                  data-[state=active]:text-white
+                  text-white/70 
+                  rounded-xl transition-all duration-300
+                  h-10 w-full p-0
+                  flex items-center justify-center
+                  relative group
+                "
+                title="Подписка"
+              >
+                <Crown size={16} />
+                <div className="
+                  absolute -top-8 left-1/2 transform -translate-x-1/2
+                  bg-black/80 text-white text-xs py-1 px-2 rounded
+                  opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                  pointer-events-none whitespace-nowrap
+                ">
+                  Подписка
+                </div>
+              </TabsTrigger>
             </TabsList>
 
             {/* Контент табов с правильной прокруткой */}
@@ -1465,12 +1849,7 @@ export function SettingsScreen({ user, onBack, onSave, onSidebar, unsplashTool }
                   />
                   <Button
                     onClick={handleCustomImageSubmit}
-                    className="
-                      px-6 h-12
-                      bg-blue-500/20 hover:bg-blue-500/30
-                      border border-blue-400/30 hover:border-blue-400/50
-                      text-blue-300 rounded-xl
-                    "
+                    className="px-6 h-12 bliq-primary-button rounded-xl"
                   >
                     Применить
                   </Button>

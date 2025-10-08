@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, MapPin, Settings, UserPlus, Share, Bell, ChevronDown, ChevronUp, Globe, Search, Menu } from 'lucide-react';
+import { ArrowLeft, MapPin, Settings, UserPlus, Share, Bell, ChevronDown, ChevronUp, Globe, Search, Menu, Building2, Users, TrendingUp, Calendar, Verified, Zap, FileText, CalendarDays } from 'lucide-react';
 import { StatusBar } from './StatusBar';
 import { ProfileAvatar } from './ProfileAvatar';
 import { CompactMetricCard } from './CompactMetricCard';
 import { CompactSuperpowerCard } from './CompactSuperpowerCard';
 import { BlikCard, BlikData } from './BlikCard';
-import { BusinessProfileCard } from './BusinessProfileCard';
 import { BusinessSuperpowerCard } from './BusinessSuperpowerCard';
+import { ValueMapPreviewCard } from './ValueMapPreviewCard';
 
 
 interface User {
@@ -31,6 +31,7 @@ interface User {
     verified: boolean;
     verificationDate?: string;
     verificationDocuments?: any[];
+    brandHeader?: string; // Брендированная шапка для бизнес-профилей
   };
   metrics: {
     bliks: number;
@@ -151,6 +152,7 @@ export function ProfileScreen({
   const [isTopSuperpowersExpanded, setIsTopSuperpowersExpanded] = useState(false);
   const [showAllBliks, setShowAllBliks] = useState(false);
   const [bliksTab, setBliksTab] = useState<'my' | 'friends'>('my');
+  const [businessTab, setBusinessTab] = useState<'bliks' | 'blog' | 'events'>('bliks');
   const bliksRef = useRef<HTMLDivElement>(null);
 
   // 🎯 АДАПТИВНОЕ КОЛИЧЕСТВО СУПЕРСИЛ: определяем на основе размера экрана
@@ -205,8 +207,14 @@ export function ProfileScreen({
     return timeA - timeB;
   });
 
-  // Блики в зависимости от выбранной вкладки
-  const displayedBliks = bliksTab === 'my' 
+  // Блики в зависимости от типа профиля и выбранной вкладки
+  const displayedBliks = user.profileType === 'business'
+    ? receivedBliks.sort((a, b) => { // Для бизнес-профилей показываем только блики от клиентов (полученные)
+        const timeA = a.timestamp.includes('час') ? 1 : a.timestamp.includes('день') ? 24 : 1;
+        const timeB = b.timestamp.includes('час') ? 1 : b.timestamp.includes('день') ? 24 : 1;
+        return timeA - timeB;
+      })
+    : bliksTab === 'my' 
     ? sentBliks.sort((a, b) => {
         const timeA = a.timestamp.includes('час') ? 1 : a.timestamp.includes('день') ? 24 : 1;
         const timeB = b.timestamp.includes('час') ? 1 : b.timestamp.includes('день') ? 24 : 1;
@@ -230,13 +238,26 @@ export function ProfileScreen({
 
   return (
     <div className="min-h-screen relative flex flex-col">
+      {/* Фоновое изображение профиля - ФИРМЕННЫЙ ЭНЕРГИЧНЫЙ ФОН */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: user.profileType === 'business'
+            ? `linear-gradient(135deg, rgba(26,27,35,0.30) 0%, rgba(26,27,35,0.15) 30%, rgba(26,27,35,0.10) 60%, rgba(26,27,35,0.40) 100%), url(${user.backgroundImage})`
+            : `linear-gradient(135deg, rgba(26,27,35,0.50) 0%, rgba(99,102,241,0.12) 20%, rgba(236,72,153,0.08) 40%, rgba(168,85,247,0.10) 60%, rgba(26,27,35,0.15) 80%, rgba(26,27,35,0.60) 100%), url(${user.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+
       {/* Контент с прокруткой */}
       <div className="relative z-10 flex flex-col">
         {/* Статус бар */}
         <StatusBar />
 
-        {/* Заголовок с кнопками */}
-        <div className="flex items-center justify-between px-6 py-2 mt-2">
+        {/* Заголовок с кнопками - ТЕПЕРЬ СВЕРХУ ДЛЯ ВСЕХ */}
+        <div className="flex items-center justify-between px-6 py-2">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -316,92 +337,169 @@ export function ProfileScreen({
           </div>
         </div>
 
-        {/* Основная информация профиля */}
-        <div className="px-6 pb-8">
-          {/* Профиль пользователя */}
+        {/* 🏢 УПРОЩЕННАЯ БРЕНДИРОВАННАЯ ШАПКА (только для бизнес-профилей) */}
+        {user.profileType === 'business' && user.businessInfo?.brandHeader && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex items-start gap-4 mb-6"
+            className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden"
           >
-            <ProfileAvatar 
-              image={user.avatarImage} 
-              isOnline={user.isOnline}
-              size="large"
+            {/* Брендированное изображение */}
+            <img
+              src={user.businessInfo.brandHeader}
+              alt={`${user.businessInfo.companyName} header`}
+              className="w-full h-full object-cover"
             />
             
-            <div className="flex-1">
-              <h1 className="font-bold text-2xl text-foreground mb-1">
-                {user.name}
-              </h1>
-              <p className="text-base text-foreground/80 mb-2">{user.status}</p>
-              {/* Регион под статусом */}
-              <div className="flex items-center gap-1 text-sm text-white/70">
-                <MapPin size={14} className="text-blue-400" />
-                <span>{user.location}</span>
+            {/* Градиентный оверлей */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/80" />
+            
+            {/* ПРОСТАЯ ИНФОРМАЦИЯ НА ШАПКЕ */}
+            <div className="absolute bottom-0 left-0 right-0 px-6 pb-4">
+              <div className="flex items-center gap-3">
+                <ProfileAvatar 
+                  image={user.avatarImage} 
+                  isOnline={user.isOnline}
+                  size="large"
+                  isBrandLogo={user.profileType === 'business'}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h1 className="font-bold text-xl text-white">
+                      {user.name}
+                    </h1>
+                    {user.businessInfo.verified && (
+                      <Verified size={18} className="text-emerald-400 fill-current" />
+                    )}
+                  </div>
+                  <p className="text-sm text-white/80 line-clamp-1">{user.businessInfo.description}</p>
+                  <div className="flex items-center gap-1 text-xs text-white/70 mt-0.5">
+                    <MapPin size={12} className="text-blue-400" />
+                    <span>{user.location}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
+        )}
 
-          {/* Метрики */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center justify-center gap-6 mb-8"
-          >
-            <CompactMetricCard 
-              value={user.metrics.bliks} 
-              label="Блики" 
-              index={0}
-              onClick={scrollToBliks}
-            />
-            <CompactMetricCard 
-              value={user.metrics.friends} 
-              label="Друзья" 
-              index={1}
-              onClick={onViewFriends || (() => {})}
-            />
-            <CompactMetricCard 
-              value={user.metrics.superpowers} 
-              label="Суперсилы" 
-              index={2}
-              onClick={onViewMap}
-            />
-          </motion.div>
-
-          {/* Бизнес-информация (если это бизнес-профиль) */}
-          {user.profileType === 'business' && user.businessInfo && (
+        {/* СТАТИСТИКА ПОД ШАПКОЙ - для бизнес-профилей */}
+        {user.profileType === 'business' && user.businessInfo && (
+          <div className="border-b border-white/10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mb-8 px-6"
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="px-6 py-4"
             >
-              <BusinessProfileCard
-                businessInfo={user.businessInfo}
-                metrics={user.metrics}
-                isOwner={true}
-                onRequestVerification={() => {
-                  // TODO: implement verification
-                }}
-                onUpgradeToPremium={() => {
-                  // TODO: implement premium upgrade
-                }}
-              />
+              <div className="flex items-center justify-center gap-6 max-w-md mx-auto">
+                <CompactMetricCard 
+                  value={user.metrics.superpowers} 
+                  label="Суперсилы" 
+                  index={0}
+                  onClick={onViewMap}
+                />
+                <CompactMetricCard 
+                  value={user.metrics.bliks} 
+                  label="Блики" 
+                  index={1}
+                  onClick={scrollToBliks}
+                />
+                <CompactMetricCard 
+                  value={user.metrics.friends} 
+                  label="Клиенты" 
+                  index={2}
+                  onClick={onViewFriends || (() => {})}
+                />
+              </div>
             </motion.div>
+          </div>
+        )}
+
+        {/* Основная информация профиля */}
+        <div className="px-6 pb-8">
+          {/* 🏢 БИЗНЕС-ПРОФИЛЬ: Компактная структура */}
+          {user.profileType === 'business' && user.businessInfo ? (
+            <>
+
+              {/* Карта ценности - превью с диаграммой и топ-3 суперсилами */}
+              <ValueMapPreviewCard
+                topSuperpowers={user.topSuperpowers}
+                overallScore={94}
+                metrics={user.metrics}
+                onClick={onViewMap}
+              />
+            </>
+          ) : (
+            // ЛИЧНЫЙ ПРОФИЛЬ: Обычная структу��а
+            <>
+              {/* Профиль пользователя */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-start gap-4 mb-6"
+              >
+                <ProfileAvatar 
+                  image={user.avatarImage} 
+                  isOnline={user.isOnline}
+                  size="large"
+                  isBrandLogo={user.profileType === 'business'}
+                />
+                
+                <div className="flex-1">
+                  <h1 className="font-bold text-2xl text-foreground mb-1">
+                    {user.name}
+                  </h1>
+                  <p className="text-base text-foreground/80 mb-2">{user.status}</p>
+                  {/* Регион под статусом */}
+                  <div className="flex items-center gap-1 text-sm text-white/70">
+                    <MapPin size={14} className="text-blue-400" />
+                    <span>{user.location}</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Метрики */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex items-center justify-center gap-6 mb-8"
+              >
+                <CompactMetricCard 
+                  value={user.metrics.bliks} 
+                  label="Блики" 
+                  index={0}
+                  onClick={scrollToBliks}
+                />
+                <CompactMetricCard 
+                  value={user.metrics.friends} 
+                  label="Друзья" 
+                  index={1}
+                  onClick={onViewFriends || (() => {})}
+                />
+                <CompactMetricCard 
+                  value={user.metrics.superpowers} 
+                  label="Суперсилы" 
+                  index={2}
+                  onClick={onViewMap}
+                />
+              </motion.div>
+            </>
           )}
 
-          {/* Топ суперсилы */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-8"
-          >
-            {/* Контейнер для центрирования сетки и выравнивания заголовка */}
-            <div className="max-w-sm mx-auto sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl">
+          {/* Топ суперсилы - ТОЛЬКО ДЛЯ ЛИЧНЫХ ПРОФИЛЕЙ */}
+          {user.profileType !== 'business' && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mb-8"
+            >
+              {/* Контейнер для центрирования сетки и выравнивания заголовка */}
+              <div className="max-w-sm mx-auto sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl">
               {/* Заголовок с кнопкой раскрытия - выровнен по левому краю сетки */}
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-bold text-lg text-foreground">
@@ -472,7 +570,8 @@ export function ProfileScreen({
                 ))}
               </motion.div>
             </div>
-          </motion.div>
+            </motion.div>
+          )}
           
           {/* Кнопки действий убраны - доступ к персональному сайту через Блог, делиться своим профилем не нужно */}
 
@@ -484,97 +583,227 @@ export function ProfileScreen({
             transition={{ duration: 0.6, delay: 0.8 }}
             className="mb-8"
           >
-            {/* Главное табменю типов контента */}
-            <div className="w-full max-w-md mx-auto mb-4">
-              <div className="flex items-center glass-card rounded-2xl p-1">
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  className="flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 bg-white/20 text-white shadow-sm"
-                >
-                  ⚡ Блики
-                </motion.button>
-                
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onViewBlog}
-                  className="flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 text-white/60 hover:text-white/80"
-                >
-                  📝 Блог
-                </motion.button>
+            {user.profileType === 'business' ? (
+              // 🏢 БИЗНЕС-ПРОФИЛЬ: Сегментированный контрол (iOS/Material style)
+              <div className="w-full mb-6 flex justify-center px-6">
+                <div className="inline-flex items-center backdrop-blur-xl bg-white/10 rounded-2xl p-1 border border-white/20 shadow-lg">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setBusinessTab('bliks')}
+                    className={`
+                      relative flex items-center gap-2 px-4 py-2 rounded-xl
+                      transition-all duration-300 font-medium text-sm
+                      ${businessTab === 'bliks'
+                        ? 'text-white'
+                        : 'text-white/60 hover:text-white/80'
+                      }
+                    `}
+                  >
+                    {businessTab === 'bliks' && (
+                      <motion.div
+                        layoutId="businessTabIndicator"
+                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-xl shadow-md"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                      />
+                    )}
+                    <span className="relative z-10">⚡</span>
+                    <span className="relative z-10">Блики</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setBusinessTab('blog');
+                      onViewBlog?.();
+                    }}
+                    className={`
+                      relative flex items-center gap-2 px-4 py-2 rounded-xl
+                      transition-all duration-300 font-medium text-sm
+                      ${businessTab === 'blog'
+                        ? 'text-white'
+                        : 'text-white/60 hover:text-white/80'
+                      }
+                    `}
+                  >
+                    {businessTab === 'blog' && (
+                      <motion.div
+                        layoutId="businessTabIndicator"
+                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-xl shadow-md"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                      />
+                    )}
+                    <span className="relative z-10">✍️</span>
+                    <span className="relative z-10">Блог</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setBusinessTab('events')}
+                    className={`
+                      relative flex items-center gap-2 px-4 py-2 rounded-xl
+                      transition-all duration-300 font-medium text-sm
+                      ${businessTab === 'events'
+                        ? 'text-white'
+                        : 'text-white/60 hover:text-white/80'
+                      }
+                    `}
+                  >
+                    {businessTab === 'events' && (
+                      <motion.div
+                        layoutId="businessTabIndicator"
+                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-xl shadow-md"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                      />
+                    )}
+                    <span className="relative z-10">🎉</span>
+                    <span className="relative z-10">События</span>
+                  </motion.button>
+                </div>
               </div>
-            </div>
-            
-            {/* Компактные фильтры "Мои" / "Друзей" */}
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <button
-                onClick={() => setBliksTab('my')}
-                className={`
-                  text-sm transition-all duration-300
-                  ${bliksTab === 'my'
-                    ? 'text-white font-medium'
-                    : 'text-white/50 hover:text-white/80'
-                  }
-                `}
-              >
-                Мои
-              </button>
-              <span className="text-white/30">•</span>
-              <button
-                onClick={() => setBliksTab('friends')}
-                className={`
-                  text-sm transition-all duration-300
-                  ${bliksTab === 'friends'
-                    ? 'text-white font-medium'
-                    : 'text-white/50 hover:text-white/80'
-                  }
-                `}
-              >
-                Друзей
-              </button>
-            </div>
+            ) : (
+              // 👤 ЛИЧНЫЙ ПРОФИЛЬ: Обычное меню с фильтрами
+              <>
+                {/* Главное табменю типов контента */}
+                <div className="w-full max-w-md mx-auto mb-4">
+                  <div className="flex items-center glass-card rounded-2xl p-1">
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      className="flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 bg-white/20 text-white shadow-sm"
+                    >
+                      ⚡ Блики
+                    </motion.button>
+                    
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={onViewBlog}
+                      className="flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 text-white/60 hover:text-white/80"
+                    >
+                      📝 Блог
+                    </motion.button>
+                  </div>
+                </div>
+                
+                {/* Компактные фильтры "Мои" / "Друзей" */}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <button
+                    onClick={() => setBliksTab('my')}
+                    className={`
+                      text-sm transition-all duration-300
+                      ${bliksTab === 'my'
+                        ? 'text-white font-medium'
+                        : 'text-white/50 hover:text-white/80'
+                      }
+                    `}
+                  >
+                    Мои
+                  </button>
+                  <span className="text-white/30">•</span>
+                  <button
+                    onClick={() => setBliksTab('friends')}
+                    className={`
+                      text-sm transition-all duration-300
+                      ${bliksTab === 'friends'
+                        ? 'text-white font-medium'
+                        : 'text-white/50 hover:text-white/80'
+                      }
+                    `}
+                  >
+                    Друзей
+                  </button>
+                </div>
+              </>
+            )}
 
-            {/* Контент - только Блики */}
-            <div className="profile-bliks-mobile">
-              {(showAllBliks ? displayedBliks : displayedBliks.slice(0, previewBliksCount)).map((blik, index) => (
-                <motion.div
-                  key={blik.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="instagram-feed-card"
-                >
-                  <BlikCard
-                    blik={blik}
-                    onLike={onLike}
-                    onComment={onComment}
-                    onShare={onShareBlik}
-                    onUserProfile={onUserProfile}
-                    onBlikDetail={onBlikDetail}
-                    showFullContent={true}
-                  />
-                </motion.div>
-              ))}
-            </div>
+            {/* Контент в зависимости от типа профиля и выбранной вкладки */}
+            {user.profileType === 'business' && businessTab === 'bliks' && (
+              // 🏢 БИЗНЕС: Блики от клиентов
+              <div className="profile-bliks-mobile">
+                {(showAllBliks ? displayedBliks : displayedBliks.slice(0, previewBliksCount)).map((blik, index) => (
+                  <motion.div
+                    key={blik.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="instagram-feed-card"
+                  >
+                    <BlikCard
+                      blik={blik}
+                      onLike={onLike}
+                      onComment={onComment}
+                      onShare={onShareBlik}
+                      onUserProfile={onUserProfile}
+                      onBlikDetail={onBlikDetail}
+                      showFullContent={true}
+                    />
+                  </motion.div>
+                ))}
+                
+                {displayedBliks.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-white/60">Пока нет бликов от клиентов</p>
+                  </div>
+                )}
+              </div>
+            )}
 
-            {displayedBliks.length === 0 && (
-              <div className="text-center py-12 glass-card rounded-2xl">
-                <p className="text-muted-foreground">
-                  {bliksTab === 'my' 
-                    ? 'Ты еще не отправлял блики' 
-                    : 'Друзья еще не отправляли тебе блики'
-                  }
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {bliksTab === 'my'
-                    ? 'Отметь суперсилы друзей и они появятся здесь'
-                    : 'Блики появятся здесь когда друзья отметят твои суперсилы'
-                  }
-                </p>
+            {user.profileType === 'business' && businessTab === 'blog' && (
+              // 🏢 БИЗНЕС: Блог (перенаправление на PersonalSiteScreen)
+              <div className="text-center py-12">
+                <p className="text-white/60 mb-4">Блог открывается в отдельном экране</p>
+              </div>
+            )}
+
+            {user.profileType === 'business' && businessTab === 'events' && (
+              // 🏢 БИЗНЕС: События (заглушка)
+              <div className="text-center py-12">
+                <p className="text-white/60">События скоро появятся</p>
+              </div>
+            )}
+
+            {user.profileType !== 'business' && (
+              // 👤 ЛИЧНЫЙ ПРОФИЛЬ: Блики
+              <div className="profile-bliks-mobile">
+                {(showAllBliks ? displayedBliks : displayedBliks.slice(0, previewBliksCount)).map((blik, index) => (
+                  <motion.div
+                    key={blik.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="instagram-feed-card"
+                  >
+                    <BlikCard
+                      blik={blik}
+                      onLike={onLike}
+                      onComment={onComment}
+                      onShare={onShareBlik}
+                      onUserProfile={onUserProfile}
+                      onBlikDetail={onBlikDetail}
+                      showFullContent={true}
+                    />
+                  </motion.div>
+                ))}
+
+                {displayedBliks.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-white/60">Пока нет бликов</p>
+                  </div>
+                )}
               </div>
             )}
           </motion.div>
         </div>
       </div>
+
+      {/* Фоновое изображение профиля с градиентом */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.60) 60%, rgba(0,0,0,0.85) 100%), url(${user.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
     </div>
   );
 }

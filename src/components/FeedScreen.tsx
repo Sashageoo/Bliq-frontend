@@ -53,6 +53,7 @@ interface FeedScreenProps {
   onSearch?: () => void;
   onBlikDetail?: (blikId: string) => void;
   onSuperpowerClick?: (superpowerName: string) => void; // Добавлен новый пропс
+  unreadNotificationsCount?: number; // Количество непрочитанных уведомлений
 }
 
 export function FeedScreen({
@@ -67,7 +68,8 @@ export function FeedScreen({
   onNotifications,
   onSearch,
   onBlikDetail,
-  onSuperpowerClick
+  onSuperpowerClick,
+  unreadNotificationsCount = 0
 }: FeedScreenProps) {
   return (
     <div 
@@ -153,7 +155,13 @@ export function FeedScreen({
               <Bell size={22} className="relative z-10" />
               
               {/* Уведомление badge */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full border border-slate-900" />
+              {unreadNotificationsCount > 0 && (
+                <div className="bliq-nav-badge absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1">
+                  <span className="text-white text-xs font-bold leading-none">
+                    {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                  </span>
+                </div>
+              )}
             </button>
 
             {/* Аватар пользователя справа - доступ к профилю/сайдбару */}
@@ -220,47 +228,21 @@ export function FeedScreen({
       <div className="relative z-10 flex-1 pb-24">
         {feedBliks.length > 0 ? (
           <div className="px-3 pt-6 pb-4">
-            {/* Мобильная версия: одна колонка как Instagram */}
-            <div className="block md:hidden w-full max-w-lg mx-auto overflow-hidden">
+            {/* Универсальная сетка бликов для всех разрешений */}
+            <div className="bliks-grid">
               {feedBliks.map((blik, index) => (
-                <div
+                <BlikCard
                   key={blik.id}
-                  className="w-full max-w-full cursor-pointer overflow-hidden"
-                  onClick={() => onBlikDetail?.(blik.id)}
-                >
-                  <BlikCard
-                    blik={blik}
-                    layout="feed"
-                    index={index}
-                    onLike={onLike}
-                    onComment={onComment}
-                    onShare={onShare}
-                    onUserProfile={onUserProfile}
-                  />
-                </div>
-              ))}
-            </div>
-            
-            {/* Планшетная/компьютерная версия: адаптивная сетка */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
-              {feedBliks.map((blik, index) => (
-                <div
-                  key={blik.id}
-                  className="w-full cursor-pointer"
-                  onClick={() => onBlikDetail?.(blik.id)}
-                >
-                  <BlikCard
-                    blik={blik}
-                    layout="grid"
-                    index={index}
-                    onLike={onLike}
-                    onComment={onComment}
-                    onShare={onShare}
-                    onUserProfile={onUserProfile}
-                    onBlikDetail={onBlikDetail}
-                    onSuperpowerClick={onSuperpowerClick}
-                  />
-                </div>
+                  blik={blik}
+                  layout="grid"
+                  index={index}
+                  onLike={onLike}
+                  onComment={onComment}
+                  onShare={onShare}
+                  onUserProfile={onUserProfile}
+                  onBlikDetail={onBlikDetail}
+                  onSuperpowerClick={onSuperpowerClick}
+                />
               ))}
             </div>
           </div>
@@ -329,6 +311,7 @@ const PopularUserCard = memo(function PopularUserCard({
               image={user.avatar} 
               isOnline={user.isOnline}
               size="medium"
+              isBrandLogo={isBusiness}
               className={isBusiness ? 'rounded-lg' : 'rounded-full'}
             />
           </div>
@@ -352,7 +335,7 @@ const PopularUserCard = memo(function PopularUserCard({
           <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-slate-900 flex items-center justify-center ${
             isBusiness
               ? 'bg-gradient-to-r from-orange-500 to-yellow-500'
-              : 'bg-gradient-to-r from-purple-500 to-pink-500'
+              : 'bliq-primary-button'
           }`}>
             <span className="text-white text-xs font-medium">
               {user.recentBliks > 9 ? '9+' : user.recentBliks}

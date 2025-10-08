@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Inbox, Send } from 'lucide-react';
+import { Inbox, Send } from 'lucide-react';
 import { StatusBar } from './StatusBar';
 import { BlikCard, BlikData } from './BlikCard';
 
@@ -8,24 +8,32 @@ interface BliksScreenProps {
   receivedBliks: BlikData[];
   sentBliks: BlikData[];
   userProfileType?: 'personal' | 'business';
-  onBack: () => void;
   onLike: (blikId: string) => void;
   onComment: (blikId: string) => void;
   onShare: (blikId: string) => void;
   onBlikDetail: (blikId: string) => void;
-  onSuperpowerClick?: (superpowerName: string) => void; // Добавляем функцию для перехода к суперсиле
+  onSuperpowerClick?: (superpowerName: string) => void;
+  onUserProfile?: (userId: string) => void;
+  onSidebar: () => void;
+  onSearch: () => void;
+  onNotifications: () => void;
+  unreadNotificationsCount?: number;
 }
 
 export function BliksScreen({
   receivedBliks,
   sentBliks,
   userProfileType = 'personal',
-  onBack,
   onLike,
   onComment,
   onShare,
   onBlikDetail,
-  onSuperpowerClick
+  onSuperpowerClick,
+  onUserProfile,
+  onSidebar,
+  onSearch,
+  onNotifications,
+  unreadNotificationsCount = 0
 }: BliksScreenProps) {
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
 
@@ -50,99 +58,70 @@ export function BliksScreen({
     <div className="h-screen relative overflow-hidden flex flex-col">
       {/* Контент с прокруткой */}
       <div className="relative z-10 flex-1 flex flex-col">
-        {/* Статус-бар */}
-        <StatusBar />
+        {/* Статус-бар БЕЗ фона - прозрачный */}
+        <div className="relative z-20">
+          <StatusBar
+            onMenuClick={onSidebar}
+            onNotificationsClick={onNotifications}
+            onSearchClick={onSearch}
+            notificationsCount={unreadNotificationsCount}
+          />
+        </div>
 
         {/* Прокручиваемый контент */}
         <div className="flex-1 overflow-y-auto scrollbar-hide pb-20">
-          <div className="px-6 pt-8">
-            {/* Заголовок */}
-            <div className="flex items-center justify-between py-4 mb-6">
-              <div className="flex items-center gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={onBack}
-                  className="text-white p-1"
-                >
-                  <ArrowLeft size={20} />
-                </motion.button>
-                <div>
-                  <h1 className="text-white font-semibold text-xl">Блики</h1>
-                  <p className="text-white/60 text-sm">История ваших бликов</p>
-                </div>
-              </div>
-            </div>
+          <div className="px-6 pt-6">
 
-            {/* Табы */}
+            {/* Табы - ТОЧНАЯ КОПИЯ ФИЛЬТРОВ ПЕРИОДА ИЗ ТОПА */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl mb-6 overflow-hidden"
+              transition={{ delay: 0.2 }}
+              className="mb-6"
             >
-              <div className="p-4">
-                <div className="flex gap-2">
-                  {tabs.map((tab) => (
-                    <motion.button
-                      key={tab.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`
-                        flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl
-                        transition-all duration-300
-                        group relative
-                        ${activeTab === tab.id
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                          : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
-                        }
-                      `}
-                    >
-                      {/* Glow effect на hover */}
-                      {activeTab !== tab.id && (
-                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      )}
-                      
-                      <tab.icon size={18} className="relative z-10" />
-                      <span className="relative z-10 font-medium">{tab.label}</span>
-                      <span className={`
-                        relative z-10 text-xs px-2 py-0.5 rounded-full
-                        ${activeTab === tab.id 
-                          ? 'bg-white/20 text-white' 
-                          : 'bg-white/10 text-white/60'
-                        }
-                      `}>
-                        {tab.count}
-                      </span>
-                    </motion.button>
-                  ))}
-                </div>
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+                {tabs.map((tab) => (
+                  <motion.button
+                    key={tab.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+                      flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap
+                      transition-all duration-300
+                      ${activeTab === tab.id
+                        ? 'bliq-primary-button'
+                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                      }
+                    `}
+                  >
+                    <tab.icon size={16} />
+                    <span className="font-medium">{tab.label}</span>
+                  </motion.button>
+                ))}
               </div>
             </motion.div>
 
-            {/* Статистика */}
+            {/* Статистика - БЕЗ ФОНОВОЙ КАРТОЧКИ (как в ТОПе) */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl mb-8 overflow-hidden"
+              className="mb-8"
             >
-              <div className="p-4">
-                <h3 className="text-white font-medium mb-4">Статистика</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white mb-1">
-                      {receivedBliks.reduce((sum, blik) => sum + blik.likes, 0)}
-                    </div>
-                    <div className="text-white/60 text-xs">Всего лайков</div>
+              <h3 className="text-white font-medium mb-4 px-2">Статистика</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <div className="text-2xl font-bold text-white mb-1">
+                    {receivedBliks.reduce((sum, blik) => sum + blik.likes, 0)}
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white mb-1">
-                      {receivedBliks.reduce((sum, blik) => sum + blik.comments, 0)}
-                    </div>
-                    <div className="text-white/60 text-xs">Всего комментариев</div>
+                  <div className="text-white/60 text-xs">Всего лайков</div>
+                </div>
+                <div className="text-center backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <div className="text-2xl font-bold text-white mb-1">
+                    {receivedBliks.reduce((sum, blik) => sum + blik.comments, 0)}
                   </div>
+                  <div className="text-white/60 text-xs">Всего комментариев</div>
                 </div>
               </div>
             </motion.div>
@@ -174,6 +153,7 @@ export function BliksScreen({
                       onComment={onComment}
                       onShare={onShare}
                       onSuperpowerClick={onSuperpowerClick}
+                      onUserProfile={onUserProfile}
                     />
                   </motion.div>
                 ))}

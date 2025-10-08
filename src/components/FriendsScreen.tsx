@@ -123,38 +123,6 @@ export function FriendsScreen({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Переключатель вида */}
-            <div className="flex items-center bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-1">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setViewMode('list')}
-                className={`
-                  p-1.5 rounded-lg transition-all duration-200
-                  ${viewMode === 'list' 
-                    ? 'bg-white/20 text-white' 
-                    : 'text-white/60 hover:text-white/80'
-                  }
-                `}
-              >
-                <List size={16} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setViewMode('gallery')}
-                className={`
-                  p-1.5 rounded-lg transition-all duration-200
-                  ${viewMode === 'gallery' 
-                    ? 'bg-white/20 text-white' 
-                    : 'text-white/60 hover:text-white/80'
-                  }
-                `}
-              >
-                <Grid3X3 size={16} />
-              </motion.button>
-            </div>
-
             {/* Поиск */}
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -216,7 +184,7 @@ export function FriendsScreen({
         </div>
 
         {/* Вкладки - прокручиваемые */}
-        <div className="px-4 mb-6">
+        <div className="px-4 mb-4">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <TabButton
               isActive={activeTab === 'all'}
@@ -260,6 +228,42 @@ export function FriendsScreen({
               label="Таланты"
               count={talentedFriendsCount}
             />
+          </div>
+        </div>
+
+        {/* Переключатель вида */}
+        <div className="px-4 mb-4 flex items-center justify-end">
+          <div className="flex items-center bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-1">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setViewMode('list')}
+              className={`
+                p-1.5 rounded-lg transition-all duration-200
+                ${viewMode === 'list' 
+                  ? 'bg-white/20 text-white' 
+                  : 'text-white/60 hover:text-white/80'
+                }
+              `}
+              title="Подробный вид"
+            >
+              <List size={16} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setViewMode('gallery')}
+              className={`
+                p-1.5 rounded-lg transition-all duration-200
+                ${viewMode === 'gallery' 
+                  ? 'bg-white/20 text-white' 
+                  : 'text-white/60 hover:text-white/80'
+                }
+              `}
+              title="Компактный вид"
+            >
+              <Grid3X3 size={16} />
+            </motion.button>
           </div>
         </div>
 
@@ -613,20 +617,20 @@ function FriendGalleryCard({
         </div>
       )}
 
-      {/* Метрики - компактные */}
+      {/* Метрики - компактные Энергия, Сила, Баланс */}
       <div className="mt-auto w-full">
         <div className="grid grid-cols-3 gap-1 mb-2">
-          <div className="flex flex-col items-center p-1 rounded bg-purple-500/20">
-            <span className="text-purple-400 text-xs">✨</span>
-            <span className="text-white font-bold text-xs">{friend.metrics.bliks}</span>
+          <div className="flex flex-col items-center p-1 rounded bg-emerald-500/20 border border-emerald-400/30">
+            <Battery size={12} className="text-emerald-400 mb-0.5" />
+            <span className="text-white font-bold text-xs">{friend.activityScore}</span>
           </div>
-          <div className="flex flex-col items-center p-1 rounded bg-cyan-500/20">
-            <span className="text-cyan-400 text-xs">👥</span>
-            <span className="text-white font-bold text-xs">{friend.metrics.friends}</span>
+          <div className="flex flex-col items-center p-1 rounded bg-purple-500/20 border border-purple-400/30">
+            <Zap size={12} className="text-purple-400 mb-0.5" />
+            <span className="text-white font-bold text-xs">{Math.round(friend.topSuperpowers.reduce((sum, sp) => sum + sp.value, 0) / Math.max(friend.topSuperpowers.length, 1))}</span>
           </div>
-          <div className="flex flex-col items-center p-1 rounded bg-orange-500/20">
-            <span className="text-orange-400 text-xs">🔥</span>
-            <span className="text-white font-bold text-xs">{friend.metrics.superpowers}</span>
+          <div className="flex flex-col items-center p-1 rounded bg-amber-500/20 border border-amber-400/30">
+            <Scale size={12} className="text-amber-400 mb-0.5" />
+            <span className="text-white font-bold text-xs">{Math.round((friend.activityScore + friend.topSuperpowers.reduce((sum, sp) => sum + sp.value, 0) / Math.max(friend.topSuperpowers.length, 1)) / 2)}</span>
           </div>
         </div>
         
