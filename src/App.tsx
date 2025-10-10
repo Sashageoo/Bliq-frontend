@@ -28,6 +28,7 @@ import { PersonalSiteScreen } from './components/PersonalSiteScreen';
 import { CreateValueMapScreen } from './components/CreateValueMapScreen';
 import { NotificationsScreen, Notification } from './components/NotificationsScreen';
 import { BottomNavigation } from './components/BottomNavigation';
+import { supabase } from './supabaseClient';
 import { AppBackground } from './components/AppBackground';
 import { Sidebar } from './components/Sidebar';
 import { AboutBliqModal } from './components/AboutBliqModal';
@@ -391,6 +392,93 @@ export default function App() {
 
   // Оптимизированные данные пользователя
   const [user, setUser] = useState(INITIAL_USER_DATA);
+
+  // Load authenticated user profile from Supabase and hydrate
+  React.useEffect(() => {
+    let isMounted = true;
+    const loadProfile = async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const session = sessionData?.session;
+        if (!session?.user) return;
+
+        // Fetch profile from our Edge API (service enriches metrics)
+        const apiBase = (import.meta as any).env?.VITE_API_URL || '/functions/v1/api';
+        const res = await fetch(`${apiBase}/profiles/${session.user.id}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+
+        if (res.status === 404) {
+          // Create profile if missing
+          const createRes = await fetch(`${apiBase}/profiles`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              username: session.user.email?.split('@')[0],
+              display_name: session.user.user_metadata?.full_name || session.user.email || 'User',
+              avatar_url: session.user.user_metadata?.avatar_url,
+            }),
+          });
+          if (!createRes.ok) return;
+          // Re-fetch
+          const refetch = await fetch(`${apiBase}/profiles/${session.user.id}`, {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          if (!refetch.ok) return;
+          const created = await refetch.json();
+          if (!isMounted) return;
+          const { profile, metrics } = created;
+          setUser(prev => ({
+            ...prev,
+            name: profile.display_name || profile.username,
+            status: prev.status,
+            location: prev.location,
+            avatarImage: profile.avatar_url || prev.avatarImage,
+            backgroundImage: profile.background_url || prev.backgroundImage,
+            metrics: {
+              bliks: metrics?.posts ?? prev.metrics.bliks,
+              friends: metrics?.followers ?? prev.metrics.friends,
+              superpowers: prev.metrics.superpowers,
+            },
+          }));
+          return;
+        }
+
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!isMounted) return;
+        const { profile, metrics } = data;
+        setUser(prev => ({
+          ...prev,
+          name: profile.display_name || profile.username,
+          status: prev.status,
+          location: prev.location,
+          avatarImage: profile.avatar_url || prev.avatarImage,
+          backgroundImage: profile.background_url || prev.backgroundImage,
+          metrics: {
+            bliks: metrics?.posts ?? prev.metrics.bliks,
+            friends: metrics?.followers ?? prev.metrics.friends,
+            superpowers: prev.metrics.superpowers,
+          },
+        }));
+      } catch (e) {
+        console.warn('Failed to load profile', e);
+      }
+    };
+
+    // Initial load and on auth state change
+    loadProfile();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      loadProfile();
+    });
+    return () => {
+      isMounted = false;
+      sub.subscription?.unsubscribe?.();
+    };
+  }, []);
 
   // 🎯 ЧЕТКОЕ РАЗДЕЛЕНИЕ: Персональные суперсилы пользователей
   const [userSuperpowers, setUserSuperpowers] = useState(() => {
