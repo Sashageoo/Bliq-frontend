@@ -1,2 +1,3 @@
 [functions]
 hello-agent = { verify_jwt = false }
+api = { verify_jwt = false }
